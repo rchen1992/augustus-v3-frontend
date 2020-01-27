@@ -2,6 +2,13 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { Button } from 'antd';
+import styled from 'styled-components';
+
+const Stuff = styled.div`
+    width: 100px;
+    height: 100px;
+    background-color: red;
+`;
 
 const App: React.FC = () => {
     return (
@@ -20,6 +27,7 @@ const App: React.FC = () => {
                     Learn React
                 </a>
                 <Button type="primary">Button</Button>
+                <Stuff />
             </header>
         </div>
     );
