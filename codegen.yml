@@ -1,0 +1,33 @@
+# Overwrite generated file when run
+overwrite: true
+
+# Url endpoint to get graphql schema.
+# This points to backend API, so API will need to be up locally.
+schema: ${GRAPHQL_API_ENDPOINT_DEV}
+
+# Places to look for graphql documents (queries, mutations, etc).
+# This will generate types and typed hooks for those using
+# `typescript-operations` and `typescript-react-apollo`
+documents:
+    - src/graphql/queries/*.ts
+
+generates:
+    # Place to put generated file
+    src/graphql/generated.tsx:
+        plugins:
+            - 'typescript'
+            - 'typescript-operations'
+            - 'typescript-react-apollo'
+        config:
+            # Don't generate React components or HOCs.
+            # Only generate hooks.
+            withComponent: false
+            withHOC: false
+            withHooks: true
+
+# Lifecycle hooks
+hooks:
+    # Run prettier after all codegen is complete
+    # in order to prettify the generated file.
+    afterAllFileWrite:
+        - prettier --write

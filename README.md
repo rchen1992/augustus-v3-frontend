@@ -1,4 +1,14 @@
+# Augustus V3 Frontend
+
+Written using React, Apollo, Auth0, and TypeScript.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## GraphQL Codegen
+
+This repo uses `graphql-codegen` to grab the graphQL schema from the backend API and automatically generate TypeScript types. It can also generate typed React hooks for all queries and mutations. See `codegen.yml` for full config.
+
+In order for the codegen to work, the backend API must be running, since it makes a request to the graphql endpoint in order to get the schema. You can set the endpoint in the `.env` file under `GRAPHQL_API_ENDPOINT_DEV`.
 
 ## Available Scripts
 

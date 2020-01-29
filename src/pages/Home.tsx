@@ -1,9 +1,8 @@
 import React from 'react';
-import GET_USER_LADDERS from 'queries/getUserLadders';
-import { useQuery } from '@apollo/react-hooks';
+import { useGetUserLaddersQuery } from 'graphql/generated';
 
 function Home() {
-    const { loading, data } = useQuery(GET_USER_LADDERS);
+    const { loading, data } = useGetUserLaddersQuery();
 
     if (loading) {
         return <div>Loading user ladders!</div>;
@@ -12,7 +11,7 @@ function Home() {
     return (
         <div>
             <header>Home Page!</header>
-            <div>{JSON.stringify(data.me.ladders)}</div>
+            <div>{JSON.stringify(data!.me!.ladders)}</div>
         </div>
     );
 }
