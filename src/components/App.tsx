@@ -27,8 +27,8 @@ const App: React.FC = () => {
         clientRef.current = new ApolloClient({
             uri:
                 process.env.NODE_ENV === 'development'
-                    ? 'http://localhost:8080/graphql'
-                    : 'https://augustus.rchen.dev/graphql',
+                    ? process.env.GRAPHQL_API_ENDPOINT_DEV || 'http://localhost:8080/graphql'
+                    : process.env.GRAPHQL_API_ENDPOINT_PROD || 'https://augustus.rchen.dev/graphql',
             credentials: 'include',
             request: async operation => {
                 const token = await getTokenSilently();
