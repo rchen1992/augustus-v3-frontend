@@ -6,6 +6,11 @@ import { ApolloProvider } from '@apollo/react-hooks';
 import { useAuth0 } from 'providers/Auth0Provider';
 import LandingPage from 'pages/LandingPage';
 import Home from 'pages/Home';
+import PrivateRoute from './PrivateRoute';
+
+function Test() {
+    return <div>hello world</div>;
+}
 
 const App: React.FC = () => {
     const { loading, isAuthenticated, getTokenSilently, user } = useAuth0();
@@ -55,6 +60,7 @@ const App: React.FC = () => {
     const router = (
         <Router history={history}>
             <Switch>
+                <PrivateRoute path="/private" component={Test} />
                 <Route path="/" component={isAuthenticated ? Home : LandingPage} />
             </Switch>
         </Router>
