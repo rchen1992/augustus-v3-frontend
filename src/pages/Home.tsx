@@ -1,5 +1,6 @@
 import React from 'react';
 import { useGetUserLaddersQuery } from 'graphql/generated';
+import AppLayout from 'components/AppLayout';
 
 function Home() {
     const { loading, data } = useGetUserLaddersQuery();
@@ -9,10 +10,10 @@ function Home() {
     }
 
     return (
-        <div>
-            <header>Home Page!</header>
+        <AppLayout>
+            <div>Home Page!</div>
             <div>{JSON.stringify(data!.me!.ladders)}</div>
-        </div>
+        </AppLayout>
     );
 }
 
