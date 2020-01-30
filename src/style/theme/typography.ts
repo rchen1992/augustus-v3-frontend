@@ -1,3 +1,14 @@
+export interface Typography {
+    logo: {
+        fontFamily: string;
+    };
+    fontFamily: string;
+    fontWeightLight: number;
+    fontWeightRegular: number;
+    fontWeightMedium: number;
+    fontWeightBold: number;
+}
+
 export default {
     logo: {
         fontFamily: 'Josefin Sans',

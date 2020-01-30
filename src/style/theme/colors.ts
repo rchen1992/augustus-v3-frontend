@@ -1,3 +1,8 @@
+export interface Colors {
+    seaGreen: string;
+    primary: string;
+}
+
 const colors = {
     seaGreen: 'hsl(161, 70%, 38.1%)',
 };

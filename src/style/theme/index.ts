@@ -1,8 +1,16 @@
+import { DefaultTheme } from 'styled-components';
 import spacing from './spacing';
-import colors from './colors';
-import typography from './typography';
+import colors, { Colors } from './colors';
+import typography, { Typography } from './typography';
 
-export default {
+export interface BaseTheme {
+    spacing: (index: number) => string;
+    spacingValues: (index: number) => number;
+    colors: Colors;
+    typography: Typography;
+}
+
+const theme: DefaultTheme = {
     /**
      * Helper to return spacing in pixels.
      */
@@ -20,3 +28,5 @@ export default {
     colors,
     typography,
 };
+
+export default theme;
