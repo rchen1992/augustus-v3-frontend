@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Button } from 'antd';
+import Avatar from './Avatar';
 
 // This is the way to import a standalone SVG file as a react component.
 import { ReactComponent as Logo } from 'assets/wreath.svg';
@@ -58,6 +59,7 @@ const Header: React.FC = () => {
             </LogoContainer>
             <ControlsWrapper>
                 <StyledButton ghost>New Match</StyledButton>
+                <Avatar />
             </ControlsWrapper>
         </Container>
     );
