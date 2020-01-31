@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from 'components/App';
 import { ThemeProvider } from 'styled-components';
 import theme from 'style/theme/index';
 import Auth0Provider from 'providers/Auth0Provider';
 import config from 'config/auth_config';
 import history from 'routerHistory';
+import GlobalCss from 'style/GlobalCss';
 
 const onAuthRedirectCallback = (redirectResult?: RedirectLoginResult) => {
     console.log('auth0 onRedirectCallback called with redirectState %o', redirectResult);
@@ -30,6 +30,7 @@ ReactDOM.render(
     >
         <ThemeProvider theme={theme}>
             <App />
+            <GlobalCss />
         </ThemeProvider>
     </Auth0Provider>,
     document.getElementById('root')
