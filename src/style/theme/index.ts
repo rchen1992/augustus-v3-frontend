@@ -4,7 +4,7 @@ import colors, { Colors } from './colors';
 import typography, { Typography } from './typography';
 
 export interface BaseTheme {
-    spacing: (index: number, hIndex: number) => string;
+    spacing: (index: number, hIndex?: number) => string;
     spacingValues: (index: number) => number;
     colors: Colors;
     typography: Typography;
