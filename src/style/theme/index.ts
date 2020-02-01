@@ -2,12 +2,14 @@ import { DefaultTheme } from 'styled-components';
 import spacing from './spacing';
 import colors, { Colors } from './colors';
 import typography, { Typography } from './typography';
+import media, { Media } from 'style/media';
 
 export interface BaseTheme {
-    spacing: (index: number, hIndex?: number) => string;
+    spacing: (index: number | null, hIndex?: number | null) => string;
     spacingValues: (index: number) => number;
     colors: Colors;
     typography: Typography;
+    media: Media;
 }
 
 const theme: DefaultTheme = {
@@ -16,11 +18,13 @@ const theme: DefaultTheme = {
      * If 1 number is provided, returns spacing for all directions.
      * If 2 numbers are provided, the first index acts as
      *  vertical spacing, and second index acts as horizontal spacing.
+     *
+     * Null indexes are treated as the value 0.
      */
-    spacing: (index: number, hIndex?: number) => {
-        let space = `${spacing[index]}px`;
-        if (hIndex) {
-            space += ` ${spacing[hIndex]}px`;
+    spacing: (index: number | null, hIndex?: number | null) => {
+        let space = index === null ? '0px' : `${spacing[index]}px`;
+        if (hIndex !== undefined) {
+            space += hIndex === null ? '0px' : ` ${spacing[hIndex]}px`;
         }
         return space;
     },
@@ -34,6 +38,7 @@ const theme: DefaultTheme = {
 
     colors,
     typography,
+    media,
 };
 
 export default theme;

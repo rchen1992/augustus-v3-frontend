@@ -2,6 +2,9 @@ export interface Typography {
     logo: {
         fontFamily: string;
     };
+    ranking: {
+        fontFamily: string;
+    };
     fontFamily: string;
     fontWeightLight: number;
     fontWeightRegular: number;
@@ -13,7 +16,10 @@ export default {
     logo: {
         fontFamily: 'Josefin Sans',
     },
-    fontFamily: 'Roboto',
+    ranking: {
+        fontFamily: 'Bebas Neue',
+    },
+    fontFamily: 'Nunito',
     fontWeightLight: 300,
     fontWeightRegular: 400,
     fontWeightMedium: 500,
