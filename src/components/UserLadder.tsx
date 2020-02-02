@@ -2,6 +2,7 @@ import React from 'react';
 import { GetUserLaddersQuery } from 'graphql/generated';
 import { Icon, Card, message } from 'antd';
 import styled from 'styled-components';
+import Rank from 'components/Rank';
 
 type GetUserLaddersQueryLadder = NonNullable<GetUserLaddersQuery['me']>['ladders'][0];
 
@@ -47,11 +48,7 @@ const UserLadder: React.FC<UserLadderProps> = props => {
         >
             <OverlapWrapper>
                 <ColMiniCard>
-                    <RankLabel>Rank</RankLabel>
-                    <Rank>
-                        {userRank}
-                        <RankSuffix>st</RankSuffix>
-                    </Rank>
+                    <Rank rank={userRank} />
                 </ColMiniCard>
                 <ColMiniCard>
                     <RatingContainer>
@@ -160,24 +157,6 @@ const OverlapWrapper = styled.div`
     top: ${CARD_OVERLAP_OFFSET};
     padding: ${CARD_OVERLAP_PADDING};
     width: 100%;
-`;
-
-const Rank = styled.div`
-    color: ${({ theme }) => theme.colors.primary};
-    font-size: 80px;
-    font-family: ${({ theme }) => theme.typography.ranking.fontFamily};
-    text-align: center;
-`;
-
-const RankLabel = styled.div`
-    color: ${({ theme }) => theme.colors.gray(7)};
-    text-align: center;
-    position: relative;
-`;
-
-const RankSuffix = styled.span`
-    font-size: 20px;
-    font-family: ${({ theme }) => theme.typography.ranking.fontFamily};
 `;
 
 const RatingContainer = styled.div`
