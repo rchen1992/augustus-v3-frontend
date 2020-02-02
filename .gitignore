@@ -2,7 +2,6 @@
 
 # our ignores
 .vscode
-.env
 
 # dependencies
 /node_modules

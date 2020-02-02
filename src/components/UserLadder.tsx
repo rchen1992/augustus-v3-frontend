@@ -3,6 +3,7 @@ import { GetUserLaddersQuery } from 'graphql/generated';
 import { Icon, Card, message } from 'antd';
 import styled from 'styled-components';
 import Rank from 'components/Rank';
+import getInviteLink from 'utils/getInviteLink';
 
 type GetUserLaddersQueryLadder = NonNullable<GetUserLaddersQuery['me']>['ladders'][0];
 
@@ -10,12 +11,16 @@ interface UserLadderProps {
     ladder: GetUserLaddersQueryLadder;
 }
 
-const showCopyLinkMessage = () => {
-    message.success('Invite link copied! Send it to whoever you want to join your ladder.', 4);
-};
-
 const UserLadder: React.FC<UserLadderProps> = props => {
-    const { ladderName, userRank, userRating, userRatingDelta = 0, userMatchStats } = props.ladder;
+    const {
+        id,
+        ladderName,
+        userRank,
+        userRating,
+        userRatingDelta = 0,
+        userMatchStats,
+        inviteToken,
+    } = props.ladder;
 
     const ratingIcon =
         userRatingDelta === null || userRatingDelta >= 0 ? (
@@ -25,6 +30,27 @@ const UserLadder: React.FC<UserLadderProps> = props => {
         );
     const ratingDelta =
         userRatingDelta && userRatingDelta >= 0 ? `+${userRatingDelta}` : userRatingDelta;
+
+    const copyInviteLink = () => {
+        const link = getInviteLink(id, inviteToken);
+
+        /**
+         * document.execCommand('copy') requires an actual DOM element,
+         * so we append a temporary input to the document body
+         * with the link text in order to copy it.
+         */
+        const $tempInput = document.createElement('input');
+        document.body.appendChild($tempInput);
+        $tempInput.setAttribute('value', link);
+        $tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild($tempInput);
+
+        /**
+         * Show toast.
+         */
+        message.success('Invite link copied! Send it to whoever you want to join your ladder.', 4);
+    };
 
     return (
         <StyledCard
@@ -36,7 +62,7 @@ const UserLadder: React.FC<UserLadderProps> = props => {
                 </Header>
             }
             actions={[
-                <Action onClick={showCopyLinkMessage}>
+                <Action onClick={copyInviteLink}>
                     <Icon type="usergroup-add" />
                     <ActionText>Copy Invite Link</ActionText>
                 </Action>,
