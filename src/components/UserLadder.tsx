@@ -1,6 +1,6 @@
 import React from 'react';
 import { GetUserLaddersQuery } from 'graphql/generated';
-import { Icon, Card } from 'antd';
+import { Icon, Card, message } from 'antd';
 import styled from 'styled-components';
 
 type GetUserLaddersQueryLadder = NonNullable<GetUserLaddersQuery['me']>['ladders'][0];
@@ -8,6 +8,10 @@ type GetUserLaddersQueryLadder = NonNullable<GetUserLaddersQuery['me']>['ladders
 interface UserLadderProps {
     ladder: GetUserLaddersQueryLadder;
 }
+
+const showCopyLinkMessage = () => {
+    message.success('Invite link copied! Send it to whoever you want to join your ladder.', 4);
+};
 
 const UserLadder: React.FC<UserLadderProps> = props => {
     const { ladderName, userRank, userRating, userRatingDelta = 0 } = props.ladder;
@@ -31,7 +35,7 @@ const UserLadder: React.FC<UserLadderProps> = props => {
                 </Header>
             }
             actions={[
-                <Action>
+                <Action onClick={showCopyLinkMessage}>
                     <Icon type="usergroup-add" />
                     <ActionText>Copy Invite Link</ActionText>
                 </Action>,
