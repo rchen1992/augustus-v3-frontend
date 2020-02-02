@@ -64,7 +64,7 @@ const UserLadder: React.FC<UserLadderProps> = props => {
             actions={[
                 <Action onClick={copyInviteLink}>
                     <Icon type="usergroup-add" />
-                    <ActionText>Copy Invite Link</ActionText>
+                    <ActionText>Invite</ActionText>
                 </Action>,
                 <Action>
                     <Icon type="eye" />
