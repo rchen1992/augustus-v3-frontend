@@ -3,13 +3,17 @@ import { useGetUserLaddersQuery } from 'graphql/generated';
 import UserLadder from 'components/UserLadder';
 import styled from 'styled-components';
 import media from 'style/media';
-import { Empty, Button } from 'antd';
+import { Empty, Button, Spin } from 'antd';
 
 const UserLadders: React.FC = () => {
     const { loading, data } = useGetUserLaddersQuery();
 
     if (loading) {
-        return <div>Loading user ladders!</div>;
+        return (
+            <SpinContainer>
+                <Spin />
+            </SpinContainer>
+        );
     }
 
     const ladders = data!.me!.ladders.map(ladder => {
@@ -58,4 +62,8 @@ const Container = styled.div`
         grid-template-columns: 1fr 1fr 1fr 1fr;
         grid-gap: ${({ theme }) => theme.spacing(4)};
     `}
+`;
+
+const SpinContainer = styled.div`
+    text-align: center;
 `;
