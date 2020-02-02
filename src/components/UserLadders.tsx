@@ -5,13 +5,23 @@ import styled from 'styled-components';
 import media from 'style/media';
 
 const Container = styled.div`
+    display: grid;
+    grid-gap: ${({ theme }) => theme.spacing(2)}};
+
     ${media.sm`
-        display: grid;
+        grid-gap: ${({ theme }) => theme.spacing(4)}};
+    `};
+
+    ${media.smd`
         grid-template-columns: 1fr 1fr;
         grid-gap: ${({ theme }) => theme.spacing(2)}};
     `};
 
-    ${media.md`
+    ${media.mlg`
+        grid-gap: ${({ theme }) => theme.spacing(4)}};
+    `};
+
+    ${media.lg`
         grid-template-columns: 1fr 1fr 1fr;
         grid-gap: ${({ theme }) => theme.spacing(3)}};
     `};

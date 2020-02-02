@@ -7,7 +7,9 @@ export interface Media {
 const breakpoints = {
     xs: 0,
     sm: 600,
+    smd: 780,
     md: 960,
+    mlg: 1120,
     lg: 1280,
     xl: 1920,
 };

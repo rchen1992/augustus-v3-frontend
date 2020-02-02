@@ -137,7 +137,6 @@ const CARD_HEADER_HEIGHT = '160px';
 
 const StyledCard = styled(Card)`
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: ${({ theme }) => theme.spacing(2)};
     background-color: ${({ theme }) => theme.colors.gray(1)};
     border-radius: ${({ theme }) => theme.shape.cardBorderRadius};
 
