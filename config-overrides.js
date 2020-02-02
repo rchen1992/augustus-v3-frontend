@@ -8,6 +8,8 @@ module.exports = override(
     }),
     addLessLoader({
         javascriptEnabled: true,
-        theme: './src/style/antdTheme.ts',
+        modifyVars: {
+            '@primary-color': 'hsl(161, 70%, 38.1%)',
+        },
     })
 );
