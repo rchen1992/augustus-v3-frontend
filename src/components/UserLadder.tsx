@@ -20,7 +20,7 @@ const Header = styled.div`
     text-align: center;
 `;
 
-const LadderName = styled.h2`
+const LadderName = styled.h3`
     margin-bottom: 0;
     font-weight: ${({ theme }) => theme.typography.fontWeightBold};
 `;
