@@ -31,9 +31,14 @@ const UserLadder: React.FC<UserLadderProps> = props => {
                 </Header>
             }
             actions={[
-                <Icon type="setting" key="setting" />,
-                <Icon type="edit" key="edit" />,
-                <Icon type="ellipsis" key="ellipsis" />,
+                <Action>
+                    <Icon type="usergroup-add" />
+                    <ActionText>Copy Invite Link</ActionText>
+                </Action>,
+                <Action>
+                    <Icon type="eye" />
+                    <ActionText>View</ActionText>
+                </Action>,
             ]}
         >
             <OverlapWrapper>
@@ -230,3 +235,13 @@ const StatValue = styled.div`
 `;
 
 const EmptyFlexPlaceholder = styled.div``;
+
+const Action = styled.div`
+    i {
+        vertical-align: middle;
+    }
+`;
+
+const ActionText = styled.span`
+    margin-left: ${({ theme }) => theme.spacing(1)};
+`;
