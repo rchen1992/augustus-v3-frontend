@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { PageHeader, Button, Icon } from 'antd';
+import { PageHeader, Button } from 'antd';
 
 interface SectionHeaderProps {
     title: string;
