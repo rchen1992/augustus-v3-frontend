@@ -2,6 +2,7 @@ export interface Colors {
     seaGreen: string;
     yellow: string;
     primary: string;
+    secondary: string;
     grayValues: string[];
     gray: (index: number) => string;
 }
@@ -22,13 +23,12 @@ export const grays = [
 const colors = {
     seaGreen: 'hsl(161, 70%, 38.1%)',
     yellow: 'hsl(45, 100%, 60%)',
-    selectiveYellow: '#FFBA08',
-    bloodRed: '#B80C09',
     grayValues: grays,
 };
 
 const namedColors = {
     primary: colors.seaGreen,
+    secondary: colors.yellow,
 };
 
 export default {
