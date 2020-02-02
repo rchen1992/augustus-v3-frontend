@@ -79,13 +79,13 @@ const UserLadder: React.FC<UserLadderProps> = props => {
                 <ColMiniCard>
                     <RatingContainer>
                         <RatingLabel>Rating: </RatingLabel>
-                        <div>
+                        <RatingValue>
                             <Rating>{userRating}</Rating>
-                            <RatingDelta>
+                            <div>
                                 {ratingIcon}
                                 <RatingDiff>({ratingDelta})</RatingDiff>
-                            </RatingDelta>
-                        </div>
+                            </div>
+                        </RatingValue>
                         <EmptyFlexPlaceholder></EmptyFlexPlaceholder>
                     </RatingContainer>
                 </ColMiniCard>
@@ -211,7 +211,7 @@ const RatingUpIcon = styled(Icon)`
     color: green;
 `;
 
-const RatingDelta = styled.div`
+const RatingValue = styled.div`
     text-align: center;
 `;
 
