@@ -7,6 +7,7 @@ import { useAuth0 } from 'providers/Auth0Provider';
 import LandingPage from 'pages/LandingPage';
 import Home from 'pages/Home';
 import PrivateRoute from './PrivateRoute';
+import FullscreenSpin from 'components/FullscreenSpin';
 
 function Test() {
     return <div>hello world</div>;
@@ -51,7 +52,7 @@ const App: React.FC = () => {
     }, [getTokenSilently, user]);
 
     if (loading) {
-        return <div>I am loading because of Auth0</div>;
+        return <FullscreenSpin />;
     }
 
     const router = (
