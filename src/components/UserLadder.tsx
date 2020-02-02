@@ -14,7 +14,7 @@ const showCopyLinkMessage = () => {
 };
 
 const UserLadder: React.FC<UserLadderProps> = props => {
-    const { ladderName, userRank, userRating, userRatingDelta = 0 } = props.ladder;
+    const { ladderName, userRank, userRating, userRatingDelta = 0, userMatchStats } = props.ladder;
 
     const ratingIcon =
         userRatingDelta === null || userRatingDelta >= 0 ? (
@@ -70,19 +70,19 @@ const UserLadder: React.FC<UserLadderProps> = props => {
             <StatsCard>
                 <Stat>
                     <StatLabel>Matches</StatLabel>
-                    <StatValue>23</StatValue>
+                    <StatValue>{userMatchStats?.matchCount}</StatValue>
                 </Stat>
                 <Stat>
                     <StatLabel>Wins</StatLabel>
-                    <StatValue>15</StatValue>
+                    <StatValue>{userMatchStats?.winCount}</StatValue>
                 </Stat>
                 <Stat>
                     <StatLabel>Losses</StatLabel>
-                    <StatValue>7</StatValue>
+                    <StatValue>{userMatchStats?.lossCount}</StatValue>
                 </Stat>
                 <Stat>
                     <StatLabel>Ties</StatLabel>
-                    <StatValue>1</StatValue>
+                    <StatValue>{userMatchStats?.tieCount}</StatValue>
                 </Stat>
             </StatsCard>
         </StyledCard>
