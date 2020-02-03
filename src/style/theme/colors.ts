@@ -1,8 +1,13 @@
+import { lighten } from 'polished';
+
 export interface Colors {
     seaGreen: string;
     yellow: string;
+    red: string;
     primary: string;
     secondary: string;
+    error: string;
+    errorLight: string;
     grayValues: string[];
     gray: (index: number) => string;
 }
@@ -23,17 +28,24 @@ export const grays = [
 const colors = {
     seaGreen: 'hsl(161, 70%, 38.1%)',
     yellow: 'hsl(45, 100%, 60%)',
+    red: 'hsl(357, 91%, 55%)',
     grayValues: grays,
 };
 
 const namedColors = {
     primary: colors.seaGreen,
     secondary: colors.yellow,
+    error: colors.red,
+};
+
+const colorShades = {
+    errorLight: lighten(0.4, namedColors.error),
 };
 
 export default {
     ...colors,
     ...namedColors,
+    ...colorShades,
 
     gray: (index: number) => grays[index],
 };

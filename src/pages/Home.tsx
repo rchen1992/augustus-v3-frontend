@@ -1,5 +1,4 @@
 import React from 'react';
-import { useGetUserLaddersQuery } from 'graphql/generated';
 import AppLayout from 'components/AppLayout';
 import UserLadders from 'components/UserLadders';
 import SectionHeader from 'components/SectionHeader';
@@ -7,6 +6,7 @@ import media from 'style/media';
 import styled from 'styled-components';
 import { Icon } from 'antd';
 import { ReactComponent as LadderSvg } from 'assets/ladder.svg';
+import NewLadderModal from 'components/NewLadderModal';
 
 function Home() {
     const LadderIcon = <Icon component={LadderSvg} />;
@@ -17,8 +17,7 @@ function Home() {
                 <SectionHeader
                     title="My Ladders"
                     subtitle="View and manage your ladders"
-                    actionText="New Ladder"
-                    onAction={() => {}}
+                    action={<NewLadderModal />}
                     avatarIcon={LadderIcon}
                 >
                     <UserLadders />

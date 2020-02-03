@@ -3,13 +3,14 @@ overwrite: true
 
 # Url endpoint to get graphql schema.
 # This points to backend API, so API will need to be up locally.
-schema: ${GRAPHQL_API_ENDPOINT_DEV}
+schema: ${REACT_APP_GRAPHQL_API_ENDPOINT}
 
 # Places to look for graphql documents (queries, mutations, etc).
 # This will generate types and typed hooks for those using
 # `typescript-operations` and `typescript-react-apollo`
 documents:
     - src/graphql/queries/*.ts
+    - src/graphql/mutations/*.ts
 
 generates:
     # Place to put generated file

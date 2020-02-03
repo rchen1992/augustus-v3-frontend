@@ -110,6 +110,24 @@ export type UserMatchStats = {
     tieCount?: Maybe<Scalars['Int']>;
 };
 
+export type NewLadderMutationVariables = {
+    ladderName: Scalars['String'];
+};
+
+export type NewLadderMutation = { __typename?: 'Mutation' } & {
+    newLadder: { __typename?: 'Ladder' } & Pick<
+        Ladder,
+        'id' | 'ladderName' | 'inviteToken' | 'userRating' | 'userRatingDelta' | 'userRank'
+    > & {
+            userMatchStats: Maybe<
+                { __typename?: 'UserMatchStats' } & Pick<
+                    UserMatchStats,
+                    'matchCount' | 'winCount' | 'lossCount' | 'tieCount'
+                >
+            >;
+        };
+};
+
 export type GetMeQueryVariables = {};
 
 export type GetMeQuery = { __typename?: 'Query' } & {
@@ -143,6 +161,63 @@ export type GetUserLaddersQuery = { __typename?: 'Query' } & {
     >;
 };
 
+export const NewLadderDocument = gql`
+    mutation newLadder($ladderName: String!) {
+        newLadder(ladderName: $ladderName) {
+            id
+            ladderName
+            inviteToken
+            userRating
+            userRatingDelta
+            userRank
+            userMatchStats {
+                matchCount
+                winCount
+                lossCount
+                tieCount
+            }
+        }
+    }
+`;
+export type NewLadderMutationFn = ApolloReactCommon.MutationFunction<
+    NewLadderMutation,
+    NewLadderMutationVariables
+>;
+
+/**
+ * __useNewLadderMutation__
+ *
+ * To run a mutation, you first call `useNewLadderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useNewLadderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [newLadderMutation, { data, loading, error }] = useNewLadderMutation({
+ *   variables: {
+ *      ladderName: // value for 'ladderName'
+ *   },
+ * });
+ */
+export function useNewLadderMutation(
+    baseOptions?: ApolloReactHooks.MutationHookOptions<
+        NewLadderMutation,
+        NewLadderMutationVariables
+    >
+) {
+    return ApolloReactHooks.useMutation<NewLadderMutation, NewLadderMutationVariables>(
+        NewLadderDocument,
+        baseOptions
+    );
+}
+export type NewLadderMutationHookResult = ReturnType<typeof useNewLadderMutation>;
+export type NewLadderMutationResult = ApolloReactCommon.MutationResult<NewLadderMutation>;
+export type NewLadderMutationOptions = ApolloReactCommon.BaseMutationOptions<
+    NewLadderMutation,
+    NewLadderMutationVariables
+>;
 export const GetMeDocument = gql`
     query getMe {
         me {

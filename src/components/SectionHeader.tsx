@@ -1,13 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import { PageHeader, Button } from 'antd';
+import { PageHeader } from 'antd';
 
 interface SectionHeaderProps {
     title: string;
     subtitle: string;
-    actionText?: string;
-    actionIcon?: string;
-    onAction?: () => void;
+    action?: React.ReactNode;
     avatarIcon: React.ReactNode;
 }
 
@@ -15,23 +13,14 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
     children,
     title,
     subtitle,
-    actionText,
-    actionIcon,
-    onAction,
+    action,
     avatarIcon,
 }) => {
     return (
         <StyledPageHeader
             title={title}
             subTitle={subtitle}
-            extra={
-                actionText &&
-                onAction && (
-                    <Button type="default" icon={actionIcon} onClick={onAction}>
-                        {actionText}
-                    </Button>
-                )
-            }
+            extra={action}
             avatar={{ icon: avatarIcon }}
         >
             {children}
