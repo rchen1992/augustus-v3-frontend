@@ -8,17 +8,15 @@ import { Empty, Button, Spin } from 'antd';
 const UserLadders: React.FC = () => {
     const { loading, data } = useGetUserLaddersQuery();
 
-    if (loading) {
+    const ladders = data?.me?.ladders;
+
+    if (loading || !ladders) {
         return (
             <SpinContainer>
                 <Spin />
             </SpinContainer>
         );
     }
-
-    const ladders = data!.me!.ladders.map(ladder => {
-        return <UserLadder key={ladder.id} ladder={ladder} />;
-    });
 
     if (ladders.length === 0) {
         return (
@@ -31,7 +29,11 @@ const UserLadders: React.FC = () => {
         );
     }
 
-    return <Container>{ladders}</Container>;
+    const userLadders = ladders.map(ladder => {
+        return <UserLadder key={ladder.id} ladder={ladder} />;
+    });
+
+    return <Container>{userLadders}</Container>;
 };
 
 export default UserLadders;
