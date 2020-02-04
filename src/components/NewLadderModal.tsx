@@ -5,6 +5,7 @@ import ErrorBox from 'components/ErrorBox';
 import { useNewLadderMutation, GetUserLaddersQuery } from 'graphql/generated';
 import GET_USER_LADDERS from 'graphql/queries/getUserLadders';
 import { GraphQLError } from 'graphql';
+import styled from 'styled-components';
 
 const NewLadderModal: React.FC = () => {
     const [visible, setVisible] = useState(false);
@@ -88,7 +89,7 @@ const NewLadderModal: React.FC = () => {
                 onCancel={onClose}
                 confirmLoading={loading}
             >
-                <Form.Item
+                <StyledFormItem
                     validateStatus={clientValidationError ? 'error' : undefined}
                     help={clientValidationError && 'Should be combination of numbers & alphabets'}
                 >
@@ -99,7 +100,7 @@ const NewLadderModal: React.FC = () => {
                         placeholder="Enter ladder name"
                         maxLength={LADDER_NAME_MAX_LENGTH}
                     />
-                </Form.Item>
+                </StyledFormItem>
                 {graphQLErrors.length > 0 && <ErrorBox errors={graphQLErrors} />}
             </Modal>
         </>
@@ -107,3 +108,7 @@ const NewLadderModal: React.FC = () => {
 };
 
 export default NewLadderModal;
+
+const StyledFormItem = styled(Form.Item)`
+    margin-bottom: 0;
+`;
