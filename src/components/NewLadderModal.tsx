@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { Button, Modal, Input } from 'antd';
+import { Button, Modal, Input, Form } from 'antd';
 import { LADDER_NAME_MAX_LENGTH } from 'utils/constants';
 import ErrorBox from 'components/ErrorBox';
 import { useNewLadderMutation, GetUserLaddersQuery } from 'graphql/generated';
 import GET_USER_LADDERS from 'graphql/queries/getUserLadders';
+import { GraphQLError } from 'graphql';
 
 const NewLadderModal: React.FC = () => {
     const [visible, setVisible] = useState(false);
     const [ladderName, setLadderName] = useState('');
-    const [submitted, setSubmitted] = useState(false);
+    const [clientValidationError, setClientValidationError] = useState(false);
+    const [graphQLErrors, setGraphQLErrors] = useState([] as Readonly<GraphQLError[]>);
 
-    const [newLadder, { loading, error }] = useNewLadderMutation({
+    const [newLadder, { loading }] = useNewLadderMutation({
         update(cache, { data }) {
             const { me } = cache.readQuery({
                 query: GET_USER_LADDERS,
@@ -28,20 +30,20 @@ const NewLadderModal: React.FC = () => {
                 });
             }
         },
-        errorPolicy: 'all',
     });
 
     async function onSubmit() {
-        setSubmitted(true);
+        setClientValidationError(false);
 
         const trimmedLadderName = ladderName.trim();
         if (!trimmedLadderName) {
+            setClientValidationError(true);
             return;
         }
 
         /**
-         * HACK: prevents unhandled promise rejection from crashing the page
-         * if this mutation fails.
+         * Note: without a try/catch, an unhandled promise rejection
+         * from our mutation will crash the page.
          * https://github.com/apollographql/apollo-client/issues/3876
          */
         try {
@@ -49,7 +51,13 @@ const NewLadderModal: React.FC = () => {
                 variables: { ladderName: trimmedLadderName },
             });
             reset();
-        } catch {}
+        } catch (err) {
+            /**
+             * Keep track of graphQL errors in our own state so
+             * that we can reset them upon closing the modal.
+             */
+            setGraphQLErrors(err.graphQLErrors);
+        }
     }
 
     function onClose() {
@@ -64,7 +72,8 @@ const NewLadderModal: React.FC = () => {
     function reset() {
         setLadderName('');
         setVisible(false);
-        setSubmitted(false);
+        setClientValidationError(false);
+        setGraphQLErrors([]);
     }
 
     return (
@@ -79,14 +88,19 @@ const NewLadderModal: React.FC = () => {
                 onCancel={onClose}
                 confirmLoading={loading}
             >
-                <Input
-                    autoFocus
-                    value={ladderName}
-                    onChange={onChange}
-                    placeholder="Enter ladder name"
-                    maxLength={LADDER_NAME_MAX_LENGTH}
-                />
-                {submitted && error && <ErrorBox errors={error.graphQLErrors} />}
+                <Form.Item
+                    validateStatus={clientValidationError ? 'error' : undefined}
+                    help={clientValidationError && 'Should be combination of numbers & alphabets'}
+                >
+                    <Input
+                        autoFocus
+                        value={ladderName}
+                        onChange={onChange}
+                        placeholder="Enter ladder name"
+                        maxLength={LADDER_NAME_MAX_LENGTH}
+                    />
+                </Form.Item>
+                {graphQLErrors.length > 0 && <ErrorBox errors={graphQLErrors} />}
             </Modal>
         </>
     );
