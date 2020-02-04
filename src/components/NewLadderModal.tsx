@@ -80,6 +80,7 @@ const NewLadderModal: React.FC = () => {
                 confirmLoading={loading}
             >
                 <Input
+                    autoFocus
                     value={ladderName}
                     onChange={onChange}
                     placeholder="Enter ladder name"
