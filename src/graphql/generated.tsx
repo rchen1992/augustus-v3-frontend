@@ -110,6 +110,16 @@ export type UserMatchStats = {
     tieCount?: Maybe<Scalars['Int']>;
 };
 
+export type MatchFieldsFragment = { __typename?: 'Match' } & Pick<
+    Match,
+    'id' | 'tied' | 'createdAt'
+> & {
+        user1: { __typename?: 'User' } & Pick<User, 'id' | 'userName'>;
+        user2: { __typename?: 'User' } & Pick<User, 'id' | 'userName'>;
+        ladder: { __typename?: 'Ladder' } & Pick<Ladder, 'id' | 'ladderName'>;
+        winner: { __typename?: 'User' } & Pick<User, 'id' | 'userName'>;
+    };
+
 export type NewLadderMutationVariables = {
     ladderName: Scalars['String'];
 };
@@ -128,6 +138,26 @@ export type NewLadderMutation = { __typename?: 'Mutation' } & {
         };
 };
 
+export type NewMatchMutationVariables = {
+    input: NewMatchInput;
+};
+
+export type NewMatchMutation = { __typename?: 'Mutation' } & {
+    newMatch: { __typename?: 'Match' } & MatchFieldsFragment;
+};
+
+export type GetLadderMatchesQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetLadderMatchesQuery = { __typename?: 'Query' } & {
+    ladder: Maybe<
+        { __typename?: 'Ladder' } & Pick<Ladder, 'id'> & {
+                matches: Array<{ __typename?: 'Match' } & MatchFieldsFragment>;
+            }
+    >;
+};
+
 export type GetLadderUsersQueryVariables = {
     id: Scalars['ID'];
 };
@@ -144,6 +174,16 @@ export type GetMeQueryVariables = {};
 
 export type GetMeQuery = { __typename?: 'Query' } & {
     me: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'userName'>>;
+};
+
+export type GetMyMatchesQueryVariables = {};
+
+export type GetMyMatchesQuery = { __typename?: 'Query' } & {
+    me: Maybe<
+        { __typename?: 'User' } & Pick<User, 'id'> & {
+                matches: Array<{ __typename?: 'Match' } & MatchFieldsFragment>;
+            }
+    >;
 };
 
 export type GetUserLaddersQueryVariables = {};
@@ -173,6 +213,29 @@ export type GetUserLaddersQuery = { __typename?: 'Query' } & {
     >;
 };
 
+export const MatchFieldsFragmentDoc = gql`
+    fragment matchFields on Match {
+        id
+        tied
+        createdAt
+        user1 {
+            id
+            userName
+        }
+        user2 {
+            id
+            userName
+        }
+        ladder {
+            id
+            ladderName
+        }
+        winner {
+            id
+            userName
+        }
+    }
+`;
 export const NewLadderDocument = gql`
     mutation newLadder($ladderName: String!) {
         newLadder(ladderName: $ladderName) {
@@ -229,6 +292,106 @@ export type NewLadderMutationResult = ApolloReactCommon.MutationResult<NewLadder
 export type NewLadderMutationOptions = ApolloReactCommon.BaseMutationOptions<
     NewLadderMutation,
     NewLadderMutationVariables
+>;
+export const NewMatchDocument = gql`
+    mutation newMatch($input: NewMatchInput!) {
+        newMatch(input: $input) {
+            ...matchFields
+        }
+    }
+    ${MatchFieldsFragmentDoc}
+`;
+export type NewMatchMutationFn = ApolloReactCommon.MutationFunction<
+    NewMatchMutation,
+    NewMatchMutationVariables
+>;
+
+/**
+ * __useNewMatchMutation__
+ *
+ * To run a mutation, you first call `useNewMatchMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useNewMatchMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [newMatchMutation, { data, loading, error }] = useNewMatchMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useNewMatchMutation(
+    baseOptions?: ApolloReactHooks.MutationHookOptions<NewMatchMutation, NewMatchMutationVariables>
+) {
+    return ApolloReactHooks.useMutation<NewMatchMutation, NewMatchMutationVariables>(
+        NewMatchDocument,
+        baseOptions
+    );
+}
+export type NewMatchMutationHookResult = ReturnType<typeof useNewMatchMutation>;
+export type NewMatchMutationResult = ApolloReactCommon.MutationResult<NewMatchMutation>;
+export type NewMatchMutationOptions = ApolloReactCommon.BaseMutationOptions<
+    NewMatchMutation,
+    NewMatchMutationVariables
+>;
+export const GetLadderMatchesDocument = gql`
+    query getLadderMatches($id: ID!) {
+        ladder(id: $id) {
+            id
+            matches {
+                ...matchFields
+            }
+        }
+    }
+    ${MatchFieldsFragmentDoc}
+`;
+
+/**
+ * __useGetLadderMatchesQuery__
+ *
+ * To run a query within a React component, call `useGetLadderMatchesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetLadderMatchesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetLadderMatchesQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetLadderMatchesQuery(
+    baseOptions?: ApolloReactHooks.QueryHookOptions<
+        GetLadderMatchesQuery,
+        GetLadderMatchesQueryVariables
+    >
+) {
+    return ApolloReactHooks.useQuery<GetLadderMatchesQuery, GetLadderMatchesQueryVariables>(
+        GetLadderMatchesDocument,
+        baseOptions
+    );
+}
+export function useGetLadderMatchesLazyQuery(
+    baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+        GetLadderMatchesQuery,
+        GetLadderMatchesQueryVariables
+    >
+) {
+    return ApolloReactHooks.useLazyQuery<GetLadderMatchesQuery, GetLadderMatchesQueryVariables>(
+        GetLadderMatchesDocument,
+        baseOptions
+    );
+}
+export type GetLadderMatchesQueryHookResult = ReturnType<typeof useGetLadderMatchesQuery>;
+export type GetLadderMatchesLazyQueryHookResult = ReturnType<typeof useGetLadderMatchesLazyQuery>;
+export type GetLadderMatchesQueryResult = ApolloReactCommon.QueryResult<
+    GetLadderMatchesQuery,
+    GetLadderMatchesQueryVariables
 >;
 export const GetLadderUsersDocument = gql`
     query getLadderUsers($id: ID!) {
@@ -326,6 +489,58 @@ export function useGetMeLazyQuery(
 export type GetMeQueryHookResult = ReturnType<typeof useGetMeQuery>;
 export type GetMeLazyQueryHookResult = ReturnType<typeof useGetMeLazyQuery>;
 export type GetMeQueryResult = ApolloReactCommon.QueryResult<GetMeQuery, GetMeQueryVariables>;
+export const GetMyMatchesDocument = gql`
+    query getMyMatches {
+        me {
+            id
+            matches {
+                ...matchFields
+            }
+        }
+    }
+    ${MatchFieldsFragmentDoc}
+`;
+
+/**
+ * __useGetMyMatchesQuery__
+ *
+ * To run a query within a React component, call `useGetMyMatchesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMyMatchesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMyMatchesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetMyMatchesQuery(
+    baseOptions?: ApolloReactHooks.QueryHookOptions<GetMyMatchesQuery, GetMyMatchesQueryVariables>
+) {
+    return ApolloReactHooks.useQuery<GetMyMatchesQuery, GetMyMatchesQueryVariables>(
+        GetMyMatchesDocument,
+        baseOptions
+    );
+}
+export function useGetMyMatchesLazyQuery(
+    baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+        GetMyMatchesQuery,
+        GetMyMatchesQueryVariables
+    >
+) {
+    return ApolloReactHooks.useLazyQuery<GetMyMatchesQuery, GetMyMatchesQueryVariables>(
+        GetMyMatchesDocument,
+        baseOptions
+    );
+}
+export type GetMyMatchesQueryHookResult = ReturnType<typeof useGetMyMatchesQuery>;
+export type GetMyMatchesLazyQueryHookResult = ReturnType<typeof useGetMyMatchesLazyQuery>;
+export type GetMyMatchesQueryResult = ApolloReactCommon.QueryResult<
+    GetMyMatchesQuery,
+    GetMyMatchesQueryVariables
+>;
 export const GetUserLaddersDocument = gql`
     query getUserLadders {
         me {

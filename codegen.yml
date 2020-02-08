@@ -11,6 +11,7 @@ schema: ${REACT_APP_GRAPHQL_API_ENDPOINT}
 documents:
     - src/graphql/queries/*.ts
     - src/graphql/mutations/*.ts
+    - src/graphql/fragments/*.ts
 
 generates:
     # Place to put generated file

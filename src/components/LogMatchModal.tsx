@@ -2,29 +2,106 @@ import React, { useState, useEffect } from 'react';
 import { Button, Modal, Form, Select, Spin, Radio } from 'antd';
 import ErrorBox from 'components/ErrorBox';
 import {
-    useNewLadderMutation,
-    GetUserLaddersQuery,
+    useNewMatchMutation,
     useGetMeQuery,
     useGetUserLaddersQuery,
     useGetLadderUsersLazyQuery,
+    GetMyMatchesQuery,
+    GetLadderMatchesQuery,
+    NewMatchMutation,
 } from 'graphql/generated';
-import GET_USER_LADDERS from 'graphql/queries/getUserLadders';
+import GET_USER_MATCHES from 'graphql/queries/getMyMatches';
+import GET_LADDER_MATCHES from 'graphql/queries/getLadderMatches';
 import { GraphQLError } from 'graphql';
 import styled from 'styled-components';
 import filterOptionsByName from 'utils/selectFilterOptionsByName';
 import { RadioChangeEvent } from 'antd/lib/radio';
+import { DataProxy } from 'apollo-cache';
 
 const { Option } = Select;
 
-const PLAYER_RADIO = 'player';
-const OPPONENT_RADIO = 'opponent';
-const TIE_RADIO = 'tie';
+enum MatchResult {
+    PlayerWin,
+    OpponentWin,
+    Tie,
+}
+
+function getMatchResult(playerId: string, opponentId: string, result: MatchResult) {
+    if (result === MatchResult.PlayerWin) {
+        return {
+            winnerId: playerId,
+            loserId: opponentId,
+        };
+    }
+
+    if (result === MatchResult.OpponentWin) {
+        return {
+            winnerId: opponentId,
+            loserId: playerId,
+        };
+    }
+
+    return {
+        winnerId: null,
+        loserId: null,
+    };
+}
+
+/**
+ * Update user matches cache after new match mutation.
+ */
+function updateMyMatches(cache: DataProxy, newMatchData?: NewMatchMutation | null) {
+    try {
+        const cachedData = cache.readQuery({
+            query: GET_USER_MATCHES,
+        }) as GetMyMatchesQuery;
+
+        if (cachedData?.me?.matches && newMatchData?.newMatch) {
+            const me = cachedData.me;
+
+            cache.writeQuery({
+                query: GET_USER_MATCHES,
+                data: {
+                    me: {
+                        ...me,
+                        matches: me.matches.concat([newMatchData.newMatch]),
+                    },
+                },
+            });
+        }
+    } catch {}
+}
+
+/**
+ * Update ladder matches cache after new match mutation.
+ */
+function updateLadderMatches(cache: DataProxy, newMatchData?: NewMatchMutation | null) {
+    try {
+        const cachedData = cache.readQuery({
+            query: GET_LADDER_MATCHES,
+        }) as GetLadderMatchesQuery;
+
+        if (cachedData?.ladder?.matches && newMatchData?.newMatch) {
+            const ladder = cachedData.ladder;
+
+            cache.writeQuery({
+                query: GET_LADDER_MATCHES,
+                data: {
+                    ladder: {
+                        ...ladder,
+                        matches: ladder.matches.concat([newMatchData.newMatch]),
+                    },
+                },
+            });
+        }
+    } catch {}
+}
 
 const LogMatchModal: React.FC = () => {
     const [visible, setVisible] = useState(false);
     const [ladderId, setLadderId] = useState();
     const [opponentId, setOpponentId] = useState();
-    const [result, setResult] = useState(PLAYER_RADIO);
+    const [result, setResult] = useState(MatchResult.PlayerWin);
     const [clientValidationError, setClientValidationError] = useState(false);
     const [graphQLErrors, setGraphQLErrors] = useState([] as Readonly<GraphQLError[]>);
 
@@ -41,28 +118,14 @@ const LogMatchModal: React.FC = () => {
         ladderUser => ladderUser.id !== authedUserId
     );
 
-    // const [newLadder, { loading }] = useNewLadderMutation({
-    //     update(cache, { data }) {
-    //         const { me } = cache.readQuery({
-    //             query: GET_USER_LADDERS,
-    //         }) as GetUserLaddersQuery;
-
-    //         if (me?.ladders && data?.newLadder) {
-    //             cache.writeQuery({
-    //                 query: GET_USER_LADDERS,
-    //                 data: {
-    //                     me: {
-    //                         ...me,
-    //                         ladders: me.ladders.concat([data.newLadder]),
-    //                     },
-    //                 },
-    //             });
-    //         }
-    //     },
-    // });
+    const [newMatch, { loading: newMatchLoading }] = useNewMatchMutation({
+        update(cache, { data }) {
+            updateMyMatches(cache, data);
+            updateLadderMatches(cache, data);
+        },
+    });
 
     async function onSubmit() {
-        console.log(ladderId, opponentId, result);
         setClientValidationError(false);
 
         // const trimmedLadderName = ladderName.trim();
@@ -71,15 +134,26 @@ const LogMatchModal: React.FC = () => {
         //     return;
         // }
 
+        console.log(ladderId, opponentId, result);
+
         /**
          * Note: without a try/catch, an unhandled promise rejection
          * from our mutation will crash the page.
          * https://github.com/apollographql/apollo-client/issues/3876
          */
         try {
-            // await newLadder({
-            //     variables: { ladderName: trimmedLadderName },
-            // });
+            const matchResult = getMatchResult(authedUserId!, opponentId, result);
+
+            await newMatch({
+                variables: {
+                    input: {
+                        ladderId,
+                        user1Id: authedUserId!,
+                        user2Id: opponentId,
+                        ...matchResult,
+                    },
+                },
+            });
             reset();
         } catch (err) {
             /**
@@ -118,7 +192,7 @@ const LogMatchModal: React.FC = () => {
     function reset() {
         setLadderId(undefined);
         setOpponentId(undefined);
-        setResult(PLAYER_RADIO);
+        setResult(MatchResult.PlayerWin);
         setVisible(false);
         setClientValidationError(false);
         setGraphQLErrors([]);
@@ -173,9 +247,9 @@ const LogMatchModal: React.FC = () => {
 
                 <StyledFormItem label="Match result">
                     <Radio.Group onChange={onResultChange} value={result}>
-                        <Radio.Button value={PLAYER_RADIO}>I won</Radio.Button>
-                        <Radio.Button value={OPPONENT_RADIO}>Opponent won</Radio.Button>
-                        <Radio.Button value={TIE_RADIO}>Tie</Radio.Button>
+                        <Radio.Button value={MatchResult.PlayerWin}>I won</Radio.Button>
+                        <Radio.Button value={MatchResult.OpponentWin}>Opponent won</Radio.Button>
+                        <Radio.Button value={MatchResult.Tie}>Tie</Radio.Button>
                     </Radio.Group>
                 </StyledFormItem>
 
@@ -193,7 +267,7 @@ const LogMatchModal: React.FC = () => {
                 visible={visible}
                 onOk={onSubmit}
                 onCancel={onClose}
-                // confirmLoading={loading}
+                confirmLoading={newMatchLoading}
             >
                 {modalContents}
             </Modal>
