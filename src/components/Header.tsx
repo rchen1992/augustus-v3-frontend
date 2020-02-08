@@ -1,10 +1,25 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Button } from 'antd';
-import Avatar from './Avatar';
-
-// This is the way to import a standalone SVG file as a react component.
+import Avatar from 'components/Avatar';
+import LogMatchModal from 'components/LogMatchModal';
 import { ReactComponent as Logo } from 'assets/wreath.svg';
+
+const Header: React.FC = () => {
+    return (
+        <Container>
+            <LogoContainer>
+                <StyledLogo />
+                <StyledLogoName>augustus</StyledLogoName>
+            </LogoContainer>
+            <ControlsWrapper>
+                <LogMatchModal />
+                <Avatar />
+            </ControlsWrapper>
+        </Container>
+    );
+};
+
+export default Header;
 
 const Container = styled.header`
     display: flex;
@@ -39,30 +54,4 @@ const StyledLogoName = styled.h2`
     margin: 0;
 `;
 
-const StyledButton = styled(Button)`
-    :hover,
-    :active,
-    :focus {
-        color: ${({ theme }) => theme.colors.gray(3)};
-        border-color: ${({ theme }) => theme.colors.gray(3)};
-    }
-`;
-
 const ControlsWrapper = styled.div``;
-
-const Header: React.FC = () => {
-    return (
-        <Container>
-            <LogoContainer>
-                <StyledLogo />
-                <StyledLogoName>augustus</StyledLogoName>
-            </LogoContainer>
-            <ControlsWrapper>
-                <StyledButton ghost>New Match</StyledButton>
-                <Avatar />
-            </ControlsWrapper>
-        </Container>
-    );
-};
-
-export default Header;
