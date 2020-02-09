@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { Button, Modal, Input, Form } from 'antd';
 import { LADDER_NAME_MAX_LENGTH } from 'utils/constants';
-import ErrorBox from 'components/ErrorBox';
 import { useNewLadderMutation, GetMyLaddersQuery } from 'graphql/generated';
 import GET_MY_LADDERS from 'graphql/queries/getMyLadders';
-import { GraphQLError } from 'graphql';
 import styled from 'styled-components';
+import useGraphQLErrorBox from 'hooks/useGraphQLErrorBox';
 
 const NewLadderModal: React.FC = () => {
     const [visible, setVisible] = useState(false);
     const [ladderName, setLadderName] = useState('');
     const [clientValidationError, setClientValidationError] = useState(false);
-    const [graphQLErrors, setGraphQLErrors] = useState([] as Readonly<GraphQLError[]>);
+    const { setGraphQLErrors, graphQLErrorBox } = useGraphQLErrorBox();
 
     const [newLadder, { loading }] = useNewLadderMutation({
         update(cache, { data }) {
@@ -101,7 +100,8 @@ const NewLadderModal: React.FC = () => {
                         maxLength={LADDER_NAME_MAX_LENGTH}
                     />
                 </StyledFormItem>
-                {graphQLErrors.length > 0 && <ErrorBox errors={graphQLErrors} />}
+
+                {graphQLErrorBox}
             </Modal>
         </>
     );

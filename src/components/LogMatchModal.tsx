@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button, Modal, Form, Select, Spin, Radio } from 'antd';
-import ErrorBox from 'components/ErrorBox';
 import {
     useNewMatchMutation,
     useGetMeQuery,
@@ -12,11 +11,11 @@ import {
 } from 'graphql/generated';
 import GET_USER_MATCHES from 'graphql/queries/getMyMatches';
 import GET_LADDER_MATCHES from 'graphql/queries/getLadderMatches';
-import { GraphQLError } from 'graphql';
 import styled from 'styled-components';
 import filterOptionsByName from 'utils/selectFilterOptionsByName';
 import { RadioChangeEvent } from 'antd/lib/radio';
 import { DataProxy } from 'apollo-cache';
+import useGraphQLErrorBox from 'hooks/useGraphQLErrorBox';
 
 const { Option } = Select;
 
@@ -103,7 +102,7 @@ const LogMatchModal: React.FC = () => {
     const [opponentId, setOpponentId] = useState();
     const [result, setResult] = useState(MatchResult.PlayerWin);
     const [submitted, setSubmitted] = useState(false);
-    const [graphQLErrors, setGraphQLErrors] = useState([] as Readonly<GraphQLError[]>);
+    const { setGraphQLErrors, graphQLErrorBox } = useGraphQLErrorBox();
 
     const { data: meData } = useGetMeQuery();
     const [
@@ -260,7 +259,7 @@ const LogMatchModal: React.FC = () => {
                     </Radio.Group>
                 </StyledFormItem>
 
-                {graphQLErrors.length > 0 && <ErrorBox errors={graphQLErrors} />}
+                {graphQLErrorBox}
             </>
         );
 
