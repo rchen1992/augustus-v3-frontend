@@ -102,7 +102,7 @@ const LogMatchModal: React.FC = () => {
     const [ladderId, setLadderId] = useState();
     const [opponentId, setOpponentId] = useState();
     const [result, setResult] = useState(MatchResult.PlayerWin);
-    const [clientValidationError, setClientValidationError] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
     const [graphQLErrors, setGraphQLErrors] = useState([] as Readonly<GraphQLError[]>);
 
     const { data: meData } = useGetMeQuery();
@@ -110,7 +110,11 @@ const LogMatchModal: React.FC = () => {
         getLadderUsers,
         { loading: ladderUsersLoading, data: ladderUserData },
     ] = useGetLadderUsersLazyQuery();
-    const { loading: myLaddersLoading, data: myLaddersData } = useGetMyLaddersQuery();
+    const {
+        loading: myLaddersLoading,
+        data: myLaddersData,
+        refetch: myLaddersRefetch,
+    } = useGetMyLaddersQuery();
 
     const authedUserId = meData?.me?.id;
     const ladders = myLaddersData?.me?.ladders;
@@ -122,19 +126,16 @@ const LogMatchModal: React.FC = () => {
         update(cache, { data }) {
             updateMyMatches(cache, data);
             updateLadderMatches(cache, data);
+            myLaddersRefetch();
         },
     });
 
     async function onSubmit() {
-        setClientValidationError(false);
+        setSubmitted(true);
 
-        // const trimmedLadderName = ladderName.trim();
-        // if (!trimmedLadderName) {
-        //     setClientValidationError(true);
-        //     return;
-        // }
-
-        console.log(ladderId, opponentId, result);
+        if (!ladderId || !opponentId) {
+            return;
+        }
 
         /**
          * Note: without a try/catch, an unhandled promise rejection
@@ -194,7 +195,7 @@ const LogMatchModal: React.FC = () => {
         setOpponentId(undefined);
         setResult(MatchResult.PlayerWin);
         setVisible(false);
-        setClientValidationError(false);
+        setSubmitted(false);
         setGraphQLErrors([]);
     }
 
@@ -217,7 +218,10 @@ const LogMatchModal: React.FC = () => {
             </SpinContainer>
         ) : (
             <>
-                <StyledFormItem label="Ladder name" hasFeedback>
+                <StyledFormItem
+                    label="Ladder name"
+                    validateStatus={submitted && !ladderId ? 'error' : undefined}
+                >
                     <StyledSelect
                         showSearch
                         placeholder="Select a ladder"
@@ -230,7 +234,10 @@ const LogMatchModal: React.FC = () => {
                     </StyledSelect>
                 </StyledFormItem>
 
-                <StyledFormItem label="Opponent name" hasFeedback>
+                <StyledFormItem
+                    label="Opponent name"
+                    validateStatus={submitted && !opponentId ? 'error' : undefined}
+                >
                     <StyledSelect
                         showSearch
                         placeholder="Select an opponent"
