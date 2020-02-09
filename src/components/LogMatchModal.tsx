@@ -25,6 +25,9 @@ enum MatchResult {
     Tie,
 }
 
+export const LADDER_SELECT_TEST_ID = 'ladder-select';
+export const OPPONENT_SELECT_TEST_ID = 'opponent-select';
+
 function getMatchResult(playerId: string, opponentId: string, result: MatchResult) {
     if (result === MatchResult.PlayerWin) {
         return {
@@ -228,6 +231,7 @@ const LogMatchModal: React.FC = () => {
                         value={ladderId}
                         onChange={onLadderChange}
                         filterOption={filterOptionsByName}
+                        data-testid={LADDER_SELECT_TEST_ID}
                     >
                         {ladderOptions}
                     </StyledSelect>
@@ -246,6 +250,7 @@ const LogMatchModal: React.FC = () => {
                         filterOption={filterOptionsByName}
                         loading={ladderUsersLoading}
                         disabled={!ladderId || !opponentOptions}
+                        data-testid={OPPONENT_SELECT_TEST_ID}
                     >
                         {opponentOptions}
                     </StyledSelect>
