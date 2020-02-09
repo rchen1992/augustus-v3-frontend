@@ -1,14 +1,14 @@
 import React from 'react';
-import { GetUserLaddersQuery } from 'graphql/generated';
+import { GetMyLaddersQuery } from 'graphql/generated';
 import { Icon, Card, message } from 'antd';
 import styled from 'styled-components';
 import Rank from 'components/Rank';
 import getInviteLink from 'utils/getInviteLink';
 
-type GetUserLaddersQueryLadder = NonNullable<GetUserLaddersQuery['me']>['ladders'][0];
+type GetMyLaddersQueryLadder = NonNullable<GetMyLaddersQuery['me']>['ladders'][0];
 
 interface UserLadderProps {
-    ladder: GetUserLaddersQueryLadder;
+    ladder: GetMyLaddersQueryLadder;
 }
 
 const UserLadder: React.FC<UserLadderProps> = props => {

@@ -1,7 +1,7 @@
 import { gql } from 'apollo-boost';
 
 export default gql`
-    query getUserLadders {
+    query getMyLadders {
         me {
             id
             ladders {

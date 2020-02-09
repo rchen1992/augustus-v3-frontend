@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Button, Modal, Input, Form } from 'antd';
 import { LADDER_NAME_MAX_LENGTH } from 'utils/constants';
 import ErrorBox from 'components/ErrorBox';
-import { useNewLadderMutation, GetUserLaddersQuery } from 'graphql/generated';
-import GET_USER_LADDERS from 'graphql/queries/getUserLadders';
+import { useNewLadderMutation, GetMyLaddersQuery } from 'graphql/generated';
+import GET_MY_LADDERS from 'graphql/queries/getMyLadders';
 import { GraphQLError } from 'graphql';
 import styled from 'styled-components';
 
@@ -16,12 +16,12 @@ const NewLadderModal: React.FC = () => {
     const [newLadder, { loading }] = useNewLadderMutation({
         update(cache, { data }) {
             const { me } = cache.readQuery({
-                query: GET_USER_LADDERS,
-            }) as GetUserLaddersQuery;
+                query: GET_MY_LADDERS,
+            }) as GetMyLaddersQuery;
 
             if (me?.ladders && data?.newLadder) {
                 cache.writeQuery({
-                    query: GET_USER_LADDERS,
+                    query: GET_MY_LADDERS,
                     data: {
                         me: {
                             ...me,

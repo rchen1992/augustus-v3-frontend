@@ -1,12 +1,12 @@
 import React from 'react';
-import { useGetUserLaddersQuery } from 'graphql/generated';
+import { useGetMyLaddersQuery } from 'graphql/generated';
 import UserLadder from 'components/UserLadder';
 import styled from 'styled-components';
 import media from 'style/media';
 import { Empty, Button, Spin } from 'antd';
 
 const UserLadders: React.FC = () => {
-    const { loading, data } = useGetUserLaddersQuery();
+    const { loading, data } = useGetMyLaddersQuery();
 
     const ladders = data?.me?.ladders;
 

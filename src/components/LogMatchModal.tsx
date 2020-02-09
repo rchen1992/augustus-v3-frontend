@@ -4,7 +4,7 @@ import ErrorBox from 'components/ErrorBox';
 import {
     useNewMatchMutation,
     useGetMeQuery,
-    useGetUserLaddersQuery,
+    useGetMyLaddersQuery,
     useGetLadderUsersLazyQuery,
     GetMyMatchesQuery,
     GetLadderMatchesQuery,
@@ -110,10 +110,10 @@ const LogMatchModal: React.FC = () => {
         getLadderUsers,
         { loading: ladderUsersLoading, data: ladderUserData },
     ] = useGetLadderUsersLazyQuery();
-    const { loading: userLaddersLoading, data: userLaddersData } = useGetUserLaddersQuery();
+    const { loading: myLaddersLoading, data: myLaddersData } = useGetMyLaddersQuery();
 
     const authedUserId = meData?.me?.id;
-    const ladders = userLaddersData?.me?.ladders;
+    const ladders = myLaddersData?.me?.ladders;
     const opponents = ladderUserData?.ladder?.users.filter(
         ladderUser => ladderUser.id !== authedUserId
     );
@@ -211,7 +211,7 @@ const LogMatchModal: React.FC = () => {
     ));
 
     const modalContents =
-        userLaddersLoading || !ladders ? (
+        myLaddersLoading || !ladders ? (
             <SpinContainer>
                 <Spin />
             </SpinContainer>
