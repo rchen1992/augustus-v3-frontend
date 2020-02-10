@@ -8,10 +8,12 @@ export default gql`
         user1 {
             id
             userName
+            avatarUrl
         }
         user2 {
             id
             userName
+            avatarUrl
         }
         ladder {
             id

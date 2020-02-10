@@ -1,15 +1,18 @@
 import React from 'react';
 import AppLayout from 'components/AppLayout';
 import UserLadders from 'components/UserLadders';
+import UserMatches from 'components/UserMatches';
 import SectionHeader from 'components/SectionHeader';
 import media from 'style/media';
 import styled from 'styled-components';
 import { Icon } from 'antd';
 import { ReactComponent as LadderSvg } from 'assets/ladder.svg';
+import { ReactComponent as VsSvg } from 'assets/vs.svg';
 import NewLadderModal from 'components/NewLadderModal';
 
 function Home() {
     const LadderIcon = <Icon component={LadderSvg} />;
+    const VsIcon = <Icon component={VsSvg} />;
 
     return (
         <AppLayout>
@@ -22,6 +25,16 @@ function Home() {
                 >
                     <UserLadders />
                 </SectionHeader>
+
+                <UserMatchesSection>
+                    <SectionHeader
+                        title="My Matches"
+                        subtitle="View all your latest matches"
+                        avatarIcon={VsIcon}
+                    >
+                        <UserMatches />
+                    </SectionHeader>
+                </UserMatchesSection>
             </Container>
         </AppLayout>
     );
@@ -45,4 +58,8 @@ const Container = styled.div`
     ${media.lg`
         padding: 0;
     `};
+`;
+
+const UserMatchesSection = styled.div`
+    margin-top: ${({ theme }) => theme.spacing(4)};
 `;

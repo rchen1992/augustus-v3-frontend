@@ -84,6 +84,11 @@ export type QueryLadderArgs = {
     id: Scalars['ID'];
 };
 
+export type QueryMatchesArgs = {
+    offset?: Maybe<Scalars['Int']>;
+    limit?: Maybe<Scalars['Int']>;
+};
+
 export type QueryMatchArgs = {
     id: Scalars['ID'];
 };
@@ -102,6 +107,11 @@ export type User = Node & {
     ratingDelta?: Maybe<Scalars['Int']>;
 };
 
+export type UserMatchesArgs = {
+    offset?: Maybe<Scalars['Int']>;
+    limit?: Maybe<Scalars['Int']>;
+};
+
 export type UserMatchStats = {
     __typename?: 'UserMatchStats';
     matchCount?: Maybe<Scalars['Int']>;
@@ -114,8 +124,8 @@ export type MatchFieldsFragment = { __typename?: 'Match' } & Pick<
     Match,
     'id' | 'tied' | 'createdAt'
 > & {
-        user1: { __typename?: 'User' } & Pick<User, 'id' | 'userName'>;
-        user2: { __typename?: 'User' } & Pick<User, 'id' | 'userName'>;
+        user1: { __typename?: 'User' } & Pick<User, 'id' | 'userName' | 'avatarUrl'>;
+        user2: { __typename?: 'User' } & Pick<User, 'id' | 'userName' | 'avatarUrl'>;
         ladder: { __typename?: 'Ladder' } & Pick<Ladder, 'id' | 'ladderName'>;
         winner: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'userName'>>;
     };
@@ -221,10 +231,12 @@ export const MatchFieldsFragmentDoc = gql`
         user1 {
             id
             userName
+            avatarUrl
         }
         user2 {
             id
             userName
+            avatarUrl
         }
         ladder {
             id
