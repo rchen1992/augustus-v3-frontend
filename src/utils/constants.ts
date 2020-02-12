@@ -1,1 +1,2 @@
 export const LADDER_NAME_MAX_LENGTH = 60;
+export const USER_MATCHES_DEFAULT_LIMIT = 2;

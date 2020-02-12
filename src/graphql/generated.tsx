@@ -101,6 +101,7 @@ export type User = Node & {
     avatarUrl?: Maybe<Scalars['String']>;
     ladders: Array<Ladder>;
     matches: Array<Match>;
+    matchCount?: Maybe<Scalars['Int']>;
     createdAt?: Maybe<Scalars['String']>;
     updatedAt?: Maybe<Scalars['String']>;
     rating?: Maybe<Scalars['Int']>;
@@ -213,11 +214,14 @@ export type GetMyLaddersQuery = { __typename?: 'Query' } & {
     >;
 };
 
-export type GetMyMatchesQueryVariables = {};
+export type GetMyMatchesQueryVariables = {
+    offset?: Maybe<Scalars['Int']>;
+    limit?: Maybe<Scalars['Int']>;
+};
 
 export type GetMyMatchesQuery = { __typename?: 'Query' } & {
     me: Maybe<
-        { __typename?: 'User' } & Pick<User, 'id'> & {
+        { __typename?: 'User' } & Pick<User, 'id' | 'matchCount'> & {
                 matches: Array<{ __typename?: 'Match' } & MatchFieldsFragment>;
             }
     >;
@@ -564,12 +568,13 @@ export type GetMyLaddersQueryResult = ApolloReactCommon.QueryResult<
     GetMyLaddersQueryVariables
 >;
 export const GetMyMatchesDocument = gql`
-    query getMyMatches {
+    query getMyMatches($offset: Int, $limit: Int) {
         me {
             id
-            matches {
+            matches(offset: $offset, limit: $limit) @connection(key: "matches") {
                 ...matchFields
             }
+            matchCount
         }
     }
     ${MatchFieldsFragmentDoc}
@@ -587,6 +592,8 @@ export const GetMyMatchesDocument = gql`
  * @example
  * const { data, loading, error } = useGetMyMatchesQuery({
  *   variables: {
+ *      offset: // value for 'offset'
+ *      limit: // value for 'limit'
  *   },
  * });
  */
