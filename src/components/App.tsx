@@ -6,8 +6,10 @@ import { ApolloProvider } from '@apollo/react-hooks';
 import { useAuth0 } from 'providers/Auth0Provider';
 import LandingPage from 'pages/LandingPage';
 import Home from 'pages/Home';
+import Ladder from 'pages/Ladder';
 import PrivateRoute from './PrivateRoute';
 import FullscreenSpin from 'components/FullscreenSpin';
+import NotFoundRoute from 'components/NotFoundRoute';
 
 function Test() {
     return <div>hello world</div>;
@@ -59,7 +61,11 @@ const App: React.FC = () => {
         <Router history={history}>
             <Switch>
                 <PrivateRoute path="/private" component={Test} />
-                <Route path="/" component={isAuthenticated ? Home : LandingPage} />
+                <Route path="/ladders/:ladderId" component={Ladder} />
+                <Route path="/" exact component={isAuthenticated ? Home : LandingPage} />
+                <Route path="*">
+                    <NotFoundRoute />
+                </Route>
             </Switch>
         </Router>
     );
