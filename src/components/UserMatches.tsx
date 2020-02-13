@@ -1,17 +1,14 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useGetMyMatchesQuery, GetMyMatchesQuery } from 'graphql/generated';
 import styled from 'styled-components';
-import { Empty, Spin, List, Avatar, Tag } from 'antd';
+import { Empty, Spin, List, Avatar, Tag, Button } from 'antd';
 import { getMatchOpponent, getMatchResultText } from 'utils/match';
 import colors from 'style/theme/colors';
 import { USER_MATCHES_DEFAULT_LIMIT } from 'utils/constants';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
-import InfiniteLoader from 'react-window-infinite-loader';
 
 const UserMatches: React.FC = () => {
-    const [page, setPage] = useState(0);
-    const itemStatusMap = useRef(new Set<number>());
+    const [lastFetchedPage, setLastFetchedPage] = useState(0);
+    const [fetchMoreLoading, setFetchMoreLoading] = useState(false);
     const { loading, data, fetchMore } = useGetMyMatchesQuery({
         variables: {
             offset: 0,
@@ -40,15 +37,16 @@ const UserMatches: React.FC = () => {
         );
     }
 
-    function loadMoreItems(startIndex: number, stopIndex: number) {
+    const hasFetchedAll = matches.length >= matchCount!;
+
+    const fetchPage = (newPage: number) => {
         return fetchMore({
             /**
              * By default, fetchMore will use the same
              * variables of the original query.
              */
             variables: {
-                offset: startIndex,
-                limit: stopIndex - startIndex,
+                offset: newPage * USER_MATCHES_DEFAULT_LIMIT,
             },
             /**
              * Cache update function.
@@ -69,111 +67,62 @@ const UserMatches: React.FC = () => {
                 } as GetMyMatchesQuery;
             },
         });
-    }
-
-    const ItemRenderer = ({ index, style }: ListChildComponentProps) => {
-        const match = matches[index];
-        if (!match) {
-            return <div>loading</div>;
-        }
-        const opponent = getMatchOpponent(match, authedUserId);
-        const matchDate = new Date(parseInt(match.createdAt!));
-        const matchResultText = getMatchResultText(match, authedUserId);
-        const matchResultColor =
-            matchResultText === 'Win'
-                ? colors.primary
-                : matchResultText === 'Loss'
-                ? colors.red
-                : colors.gray(6);
-
-        return (
-            <List.Item
-                style={style}
-                extra={
-                    <ListItemExtra>
-                        <ListItemDescription>{matchDate.toLocaleDateString()}</ListItemDescription>
-                        <MatchResultTag color={matchResultColor}>{matchResultText}</MatchResultTag>
-                    </ListItemExtra>
-                }
-            >
-                <List.Item.Meta
-                    avatar={<Avatar src={opponent.avatarUrl || undefined} />}
-                    title={<ListItemTitle>VS - {opponent.userName}</ListItemTitle>}
-                    description={match.ladder.ladderName}
-                />
-            </List.Item>
-        );
     };
+
+    const onLoadMore = async () => {
+        setFetchMoreLoading(true);
+        await fetchPage(lastFetchedPage + 1);
+        setLastFetchedPage(lastFetchedPage + 1);
+        setFetchMoreLoading(false);
+    };
+
+    const loadMoreButton = !hasFetchedAll ? (
+        <LoadMoreContainer>
+            <Button onClick={onLoadMore} loading={fetchMoreLoading}>
+                See more
+            </Button>
+        </LoadMoreContainer>
+    ) : null;
 
     return (
         <List
             bordered
             itemLayout="horizontal"
-            // pagination={{
-            //     onChange: page => {
-            //         const newPage = page - 1;
-            //         setPage(newPage);
+            dataSource={matches}
+            renderItem={match => {
+                const opponent = getMatchOpponent(match, authedUserId);
+                const matchDate = new Date(parseInt(match.createdAt!));
+                const matchResultText = getMatchResultText(match, authedUserId);
+                const matchResultColor =
+                    matchResultText === 'Win'
+                        ? colors.primary
+                        : matchResultText === 'Loss'
+                        ? colors.red
+                        : colors.gray(6);
 
-            //         //     fetchMore({
-            //         //         /**
-            //         //          * By default, fetchMore will use the same
-            //         //          * variables of the original query.
-            //         //          */
-            //         //         variables: {
-            //         //             offset: newPage * USER_MATCHES_DEFAULT_LIMIT,
-            //         //         },
-            //         //         /**
-            //         //          * Cache update function.
-            //         //          * We simply append the results to the end of
-            //         //          * the array of matches.
-            //         //          */
-            //         //         updateQuery: (prev, { fetchMoreResult }) => {
-            //         //             if (!fetchMoreResult || !fetchMoreResult.me?.matches) {
-            //         //                 return prev;
-            //         //             }
-
-            //         //             return {
-            //         //                 ...prev,
-            //         //                 me: {
-            //         //                     ...prev.me,
-            //         //                     matches: [
-            //         //                         ...prev.me!.matches,
-            //         //                         ...fetchMoreResult.me.matches,
-            //         //                     ],
-            //         //                 },
-            //         //             } as GetMyMatchesQuery;
-            //         //         },
-            //         //     });
-            //     },
-            //     current: page + 1,
-            //     total: matchCount!,
-            //     showLessItems: true,
-            //     pageSize: USER_MATCHES_DEFAULT_LIMIT,
-            // }}
-        >
-            <AutoSizer disableHeight>
-                {({ width }) => (
-                    <InfiniteLoader
-                        isItemLoaded={index => itemStatusMap.current.has(index)}
-                        itemCount={1000}
-                        loadMoreItems={loadMoreItems}
+                return (
+                    <List.Item
+                        extra={
+                            <ListItemExtra>
+                                <ListItemDescription>
+                                    {matchDate.toLocaleDateString()}
+                                </ListItemDescription>
+                                <MatchResultTag color={matchResultColor}>
+                                    {matchResultText}
+                                </MatchResultTag>
+                            </ListItemExtra>
+                        }
                     >
-                        {({ onItemsRendered, ref }) => (
-                            <FixedSizeList
-                                height={500}
-                                width={width}
-                                itemCount={8}
-                                itemSize={80}
-                                onItemsRendered={onItemsRendered}
-                                ref={ref}
-                            >
-                                {ItemRenderer}
-                            </FixedSizeList>
-                        )}
-                    </InfiniteLoader>
-                )}
-            </AutoSizer>
-        </List>
+                        <List.Item.Meta
+                            avatar={<Avatar src={opponent.avatarUrl || undefined} />}
+                            title={<ListItemTitle>VS - {opponent.userName}</ListItemTitle>}
+                            description={match.ladder.ladderName}
+                        />
+                    </List.Item>
+                );
+            }}
+            loadMore={loadMoreButton}
+        />
     );
 };
 
@@ -198,4 +147,9 @@ const ListItemDescription = styled.div`
 const MatchResultTag = styled(Tag)`
     margin-right: 0;
     margin-top: ${({ theme }) => theme.spacing(0)};
+`;
+
+const LoadMoreContainer = styled.div`
+    text-align: center;
+    padding: ${({ theme }) => theme.spacing(2)};
 `;
