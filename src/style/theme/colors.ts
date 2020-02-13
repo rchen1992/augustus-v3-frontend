@@ -4,6 +4,7 @@ export interface Colors {
     seaGreen: string;
     yellow: string;
     red: string;
+    textGray: string;
     primary: string;
     secondary: string;
     error: string;
@@ -29,6 +30,7 @@ const colors = {
     seaGreen: 'hsl(161, 70%, 38.1%)',
     yellow: 'hsl(45, 100%, 60%)',
     red: 'hsl(357, 91%, 55%)',
+    textGray: 'hsla(0, 0%, 0%, 0.45)',
     grayValues: grays,
 };
 

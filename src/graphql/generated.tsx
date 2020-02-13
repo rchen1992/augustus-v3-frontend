@@ -84,6 +84,11 @@ export type QueryLadderArgs = {
     id: Scalars['ID'];
 };
 
+export type QueryMatchesArgs = {
+    offset?: Maybe<Scalars['Int']>;
+    limit?: Maybe<Scalars['Int']>;
+};
+
 export type QueryMatchArgs = {
     id: Scalars['ID'];
 };
@@ -96,10 +101,16 @@ export type User = Node & {
     avatarUrl?: Maybe<Scalars['String']>;
     ladders: Array<Ladder>;
     matches: Array<Match>;
+    matchCount?: Maybe<Scalars['Int']>;
     createdAt?: Maybe<Scalars['String']>;
     updatedAt?: Maybe<Scalars['String']>;
     rating?: Maybe<Scalars['Int']>;
     ratingDelta?: Maybe<Scalars['Int']>;
+};
+
+export type UserMatchesArgs = {
+    offset?: Maybe<Scalars['Int']>;
+    limit?: Maybe<Scalars['Int']>;
 };
 
 export type UserMatchStats = {
@@ -114,8 +125,8 @@ export type MatchFieldsFragment = { __typename?: 'Match' } & Pick<
     Match,
     'id' | 'tied' | 'createdAt'
 > & {
-        user1: { __typename?: 'User' } & Pick<User, 'id' | 'userName'>;
-        user2: { __typename?: 'User' } & Pick<User, 'id' | 'userName'>;
+        user1: { __typename?: 'User' } & Pick<User, 'id' | 'userName' | 'avatarUrl'>;
+        user2: { __typename?: 'User' } & Pick<User, 'id' | 'userName' | 'avatarUrl'>;
         ladder: { __typename?: 'Ladder' } & Pick<Ladder, 'id' | 'ladderName'>;
         winner: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'userName'>>;
     };
@@ -203,11 +214,14 @@ export type GetMyLaddersQuery = { __typename?: 'Query' } & {
     >;
 };
 
-export type GetMyMatchesQueryVariables = {};
+export type GetMyMatchesQueryVariables = {
+    offset?: Maybe<Scalars['Int']>;
+    limit?: Maybe<Scalars['Int']>;
+};
 
 export type GetMyMatchesQuery = { __typename?: 'Query' } & {
     me: Maybe<
-        { __typename?: 'User' } & Pick<User, 'id'> & {
+        { __typename?: 'User' } & Pick<User, 'id' | 'matchCount'> & {
                 matches: Array<{ __typename?: 'Match' } & MatchFieldsFragment>;
             }
     >;
@@ -221,10 +235,12 @@ export const MatchFieldsFragmentDoc = gql`
         user1 {
             id
             userName
+            avatarUrl
         }
         user2 {
             id
             userName
+            avatarUrl
         }
         ladder {
             id
@@ -552,12 +568,13 @@ export type GetMyLaddersQueryResult = ApolloReactCommon.QueryResult<
     GetMyLaddersQueryVariables
 >;
 export const GetMyMatchesDocument = gql`
-    query getMyMatches {
+    query getMyMatches($offset: Int, $limit: Int) {
         me {
             id
-            matches {
+            matches(offset: $offset, limit: $limit) @connection(key: "matches") {
                 ...matchFields
             }
+            matchCount
         }
     }
     ${MatchFieldsFragmentDoc}
@@ -575,6 +592,8 @@ export const GetMyMatchesDocument = gql`
  * @example
  * const { data, loading, error } = useGetMyMatchesQuery({
  *   variables: {
+ *      offset: // value for 'offset'
+ *      limit: // value for 'limit'
  *   },
  * });
  */

@@ -1,10 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
-import Avatar from 'components/Avatar';
 import LogMatchModal from 'components/LogMatchModal';
 import { ReactComponent as Logo } from 'assets/wreath.svg';
+import { useAuth0 } from 'providers/Auth0Provider';
+import { Avatar } from 'antd';
 
 const Header: React.FC = () => {
+    const { user } = useAuth0();
+
     return (
         <Container>
             <LogoContainer>
@@ -13,7 +16,7 @@ const Header: React.FC = () => {
             </LogoContainer>
             <ControlsWrapper>
                 <LogMatchModal />
-                <Avatar />
+                <StyledAvatar src={user!.picture} />
             </ControlsWrapper>
         </Container>
     );
@@ -55,3 +58,7 @@ const StyledLogoName = styled.h2`
 `;
 
 const ControlsWrapper = styled.div``;
+
+const StyledAvatar = styled(Avatar)`
+    margin-left: ${({ theme }) => theme.spacing(1)};
+`;
