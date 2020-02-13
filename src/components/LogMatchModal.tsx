@@ -63,7 +63,7 @@ function updateMyMatches(cache: DataProxy, newMatchData?: NewMatchMutation | nul
                 data: {
                     me: {
                         ...me,
-                        matches: me.matches.concat([newMatchData.newMatch]),
+                        matches: [newMatchData.newMatch].concat(me.matches),
                     },
                 },
             });
@@ -88,7 +88,7 @@ function updateLadderMatches(cache: DataProxy, newMatchData?: NewMatchMutation |
                 data: {
                     ladder: {
                         ...ladder,
-                        matches: ladder.matches.concat([newMatchData.newMatch]),
+                        matches: [newMatchData.newMatch].concat(ladder.matches),
                     },
                 },
             });
