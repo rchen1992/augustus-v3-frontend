@@ -4,6 +4,8 @@ import { Icon, Card, message } from 'antd';
 import styled from 'styled-components';
 import Rank from 'components/Rank';
 import getInviteLink from 'utils/getInviteLink';
+import RatingDelta from 'components/RatingDelta';
+import { Link } from 'react-router-dom';
 
 type GetMyLaddersQueryLadder = NonNullable<GetMyLaddersQuery['me']>['ladders'][0];
 
@@ -21,15 +23,6 @@ const UserLadder: React.FC<UserLadderProps> = props => {
         userMatchStats,
         inviteToken,
     } = props.ladder;
-
-    const ratingIcon =
-        userRatingDelta === null || userRatingDelta >= 0 ? (
-            <RatingUpIcon type="caret-up" />
-        ) : (
-            <RatingDownIcon type="caret-down" />
-        );
-    const ratingDelta =
-        userRatingDelta && userRatingDelta >= 0 ? `+${userRatingDelta}` : userRatingDelta;
 
     const copyInviteLink = () => {
         const link = getInviteLink(id, inviteToken);
@@ -67,8 +60,10 @@ const UserLadder: React.FC<UserLadderProps> = props => {
                     <ActionText>Invite</ActionText>
                 </Action>,
                 <Action>
-                    <Icon type="eye" />
-                    <ActionText>View</ActionText>
+                    <Link to={`/ladders/${id}`}>
+                        <Icon type="eye" />
+                        <ActionText>View</ActionText>
+                    </Link>
                 </Action>,
             ]}
         >
@@ -81,10 +76,7 @@ const UserLadder: React.FC<UserLadderProps> = props => {
                         <RatingLabel>Rating: </RatingLabel>
                         <RatingValue>
                             <Rating>{userRating}</Rating>
-                            <div>
-                                {ratingIcon}
-                                <RatingDiff>({ratingDelta})</RatingDiff>
-                            </div>
+                            <RatingDelta userRatingDelta={userRatingDelta} />
                         </RatingValue>
                         <EmptyFlexPlaceholder></EmptyFlexPlaceholder>
                     </RatingContainer>
@@ -202,21 +194,8 @@ const RatingLabel = styled.div`
     color: ${({ theme }) => theme.colors.gray(7)};
 `;
 
-const RatingDownIcon = styled(Icon)`
-    color: red;
-`;
-
-const RatingUpIcon = styled(Icon)`
-    color: green;
-`;
-
 const RatingValue = styled.div`
     text-align: center;
-`;
-
-const RatingDiff = styled.span`
-    color: ${({ theme }) => theme.colors.gray(7)};
-    margin-left: ${({ theme }) => theme.spacing(0)};
 `;
 
 const StatsCard = styled(MiniCard)`
