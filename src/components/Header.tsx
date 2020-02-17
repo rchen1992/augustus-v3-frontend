@@ -4,20 +4,25 @@ import LogMatchModal from 'components/LogMatchModal';
 import { ReactComponent as Logo } from 'assets/wreath.svg';
 import { useAuth0 } from 'providers/Auth0Provider';
 import { Avatar } from 'antd';
+import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
-    const { user } = useAuth0();
+    const { isAuthenticated, user } = useAuth0();
 
     return (
         <Container>
-            <LogoContainer>
-                <StyledLogo />
-                <StyledLogoName>augustus</StyledLogoName>
-            </LogoContainer>
-            <ControlsWrapper>
-                <LogMatchModal />
-                <StyledAvatar src={user!.picture} />
-            </ControlsWrapper>
+            <Link to="/">
+                <LogoContainer>
+                    <StyledLogo />
+                    <StyledLogoName>augustus</StyledLogoName>
+                </LogoContainer>
+            </Link>
+            {isAuthenticated && (
+                <ControlsWrapper>
+                    <LogMatchModal />
+                    <StyledAvatar src={user!.picture} />
+                </ControlsWrapper>
+            )}
         </Container>
     );
 };

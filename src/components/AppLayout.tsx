@@ -14,7 +14,7 @@ const Main = styled.main`
 const AppLayout: React.FC = ({ children }) => {
     return (
         <>
-            <Header></Header>
+            <Header />
             <Main>{children}</Main>
         </>
     );

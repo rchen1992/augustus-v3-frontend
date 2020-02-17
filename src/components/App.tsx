@@ -20,36 +20,36 @@ const App: React.FC = () => {
     const clientRef = React.useRef<ApolloClient<unknown> | null>(null);
 
     /**
-     * ApolloClient needs to set the Authorization token
-     * from Auth0 on every request, but the token won't be available
-     * until the user is actually authed.
-     * This means we can't construct ApolloClient until we have an auth token,
-     * so we wait until it's available during `useEffect`, and then set
-     * the clientRef accordingly.
+     * If user is authed, we need to set Authorization token
+     * from Auth0 on every request to authenticate the user on the backend.
+     *
+     * If user isn't authed (which is possible in our app because we have public pages),
+     * we won't send any token at all.
+     *
+     * Here we reconstruct ApolloClient in a `useEffect` whenever auth status changes.
      */
     React.useEffect(() => {
-        if (!user || !getTokenSilently) {
-            return;
-        }
-
         clientRef.current = new ApolloClient({
             uri: process.env.REACT_APP_GRAPHQL_API_ENDPOINT,
             credentials: 'include',
-            request: async operation => {
-                const token = await getTokenSilently();
+            request:
+                user && getTokenSilently
+                    ? async operation => {
+                          const token = await getTokenSilently();
 
-                operation.setContext((context: Record<string, any>) => ({
-                    headers: {
-                        ...context.headers,
-                        Authorization: `Bearer ${token}`,
-                        userData: JSON.stringify({
-                            nickname: user.nickname,
-                            email: user.email,
-                            avatar_url: user.picture,
-                        }),
-                    },
-                }));
-            },
+                          operation.setContext((context: Record<string, any>) => ({
+                              headers: {
+                                  ...context.headers,
+                                  Authorization: `Bearer ${token}`,
+                                  userData: JSON.stringify({
+                                      nickname: user.nickname,
+                                      email: user.email,
+                                      avatar_url: user.picture,
+                                  }),
+                              },
+                          }));
+                      }
+                    : undefined,
         });
     }, [getTokenSilently, user]);
 
@@ -70,12 +70,7 @@ const App: React.FC = () => {
         </Router>
     );
 
-    /**
-     * ApolloClient won't be initialized into the auth token
-     * is set, so don't render the ApolloProvider until
-     * that point.
-     */
-    return isAuthenticated && user && getTokenSilently && clientRef.current ? (
+    return clientRef.current ? (
         <ApolloProvider client={clientRef.current}>{router}</ApolloProvider>
     ) : (
         router
