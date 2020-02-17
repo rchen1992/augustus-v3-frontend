@@ -8,6 +8,8 @@ import {
     GetMyMatchesQuery,
     GetLadderMatchesQuery,
     NewMatchMutation,
+    useGetLadderPageQuery,
+    LadderUsersOrderBy,
 } from 'graphql/generated';
 import GET_USER_MATCHES from 'graphql/queries/getMyMatches';
 import GET_LADDER_MATCHES from 'graphql/queries/getLadderMatches';
@@ -114,6 +116,7 @@ const LogMatchModal: React.FC = () => {
         data: myLaddersData,
         refetch: myLaddersRefetch,
     } = useGetMyLaddersQuery();
+    const { refetch: ladderPageRefetch } = useGetLadderPageQuery();
 
     const authedUserId = meData?.me?.id;
     const ladders = myLaddersData?.me?.ladders;
@@ -126,6 +129,10 @@ const LogMatchModal: React.FC = () => {
             updateMyMatches(cache, data);
             updateLadderMatches(cache, data);
             myLaddersRefetch();
+            ladderPageRefetch({
+                id: ladderId,
+                ladderUsersOrderBy: LadderUsersOrderBy.RankDesc,
+            });
         },
     });
 

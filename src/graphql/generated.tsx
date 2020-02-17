@@ -26,6 +26,14 @@ export type Ladder = Node & {
     matches: Array<Match>;
 };
 
+export type LadderUsersArgs = {
+    orderBy?: Maybe<LadderUsersOrderBy>;
+};
+
+export enum LadderUsersOrderBy {
+    RankDesc = 'rank_DESC',
+}
+
 export type Match = Node & {
     __typename?: 'Match';
     id: Scalars['ID'];
@@ -173,6 +181,7 @@ export type GetLadderMatchesQuery = { __typename?: 'Query' } & {
 
 export type GetLadderPageQueryVariables = {
     id: Scalars['ID'];
+    ladderUsersOrderBy?: Maybe<LadderUsersOrderBy>;
 };
 
 export type GetLadderPageQuery = { __typename?: 'Query' } & {
@@ -448,11 +457,11 @@ export type GetLadderMatchesQueryResult = ApolloReactCommon.QueryResult<
     GetLadderMatchesQueryVariables
 >;
 export const GetLadderPageDocument = gql`
-    query getLadderPage($id: ID!) {
+    query getLadderPage($id: ID!, $ladderUsersOrderBy: LadderUsersOrderBy) {
         ladder(id: $id) {
             id
             ladderName
-            users {
+            users(orderBy: $ladderUsersOrderBy) {
                 id
                 userName
                 avatarUrl
@@ -496,6 +505,7 @@ export const GetLadderPageDocument = gql`
  * const { data, loading, error } = useGetLadderPageQuery({
  *   variables: {
  *      id: // value for 'id'
+ *      ladderUsersOrderBy: // value for 'ladderUsersOrderBy'
  *   },
  * });
  */

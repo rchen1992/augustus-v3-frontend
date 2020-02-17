@@ -1,11 +1,11 @@
 import { gql } from 'apollo-boost';
 
 export default gql`
-    query getLadderPage($id: ID!) {
+    query getLadderPage($id: ID!, $ladderUsersOrderBy: LadderUsersOrderBy) {
         ladder(id: $id) {
             id
             ladderName
-            users {
+            users(orderBy: $ladderUsersOrderBy) {
                 id
                 userName
                 avatarUrl

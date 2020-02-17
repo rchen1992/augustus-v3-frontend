@@ -4,7 +4,7 @@ import SectionHeader from 'components/SectionHeader';
 import LadderRankings from 'components/LadderRankings';
 import media from 'style/media';
 import styled from 'styled-components';
-import { useGetLadderPageQuery } from 'graphql/generated';
+import { useGetLadderPageQuery, LadderUsersOrderBy } from 'graphql/generated';
 import FullscreenSpin from 'components/FullscreenSpin';
 import { useParams } from 'react-router-dom';
 
@@ -13,6 +13,7 @@ const Ladder = () => {
     const { loading, data } = useGetLadderPageQuery({
         variables: {
             id: ladderId!,
+            ladderUsersOrderBy: LadderUsersOrderBy.RankDesc,
         },
     });
 
@@ -28,21 +29,3 @@ const Ladder = () => {
 };
 
 export default Ladder;
-
-const Container = styled.div`
-    ${media.sm`
-        padding: ${({ theme }) => theme.spacing(2, 4)};
-    `}
-
-    ${media.smd`
-        padding: 0;
-    `}
-
-    ${media.mlg`
-        padding: ${({ theme }) => theme.spacing(2, 4)};
-    `};
-
-    ${media.lg`
-        padding: 0;
-    `};
-`;
