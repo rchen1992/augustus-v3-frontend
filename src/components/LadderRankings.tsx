@@ -1,9 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Table, Avatar } from 'antd';
+import { Table } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { GetLadderPageQuery } from 'graphql/generated';
 import RatingDelta from 'components/RatingDelta';
+import AvatarAndUsername from 'components/AvatarAndUsername';
+import formatDate from 'utils/formatDate';
 
 type GetLadderPageQueryUser = NonNullable<GetLadderPageQuery['ladder']>['users'][0];
 type GetLadderPageQueryUserColumn = GetLadderPageQueryUser & { key: string };
@@ -22,12 +24,7 @@ const columns: ColumnProps<GetLadderPageQueryUserColumn>[] = [
         title: 'Player name',
         key: 'player_name',
         render(_, { userName, avatarUrl }) {
-            return (
-                <span>
-                    <Avatar src={avatarUrl || undefined} />
-                    <UsernameWrapper>{userName}</UsernameWrapper>
-                </span>
-            );
+            return <AvatarAndUsername avatarUrl={avatarUrl} userName={userName} />;
         },
     },
     {
@@ -50,7 +47,7 @@ const columns: ColumnProps<GetLadderPageQueryUserColumn>[] = [
                 return '';
             }
 
-            return new Date(parseInt(ladderJoinDate)).toLocaleDateString();
+            return formatDate(ladderJoinDate);
         },
     },
 ];
@@ -58,14 +55,10 @@ const columns: ColumnProps<GetLadderPageQueryUserColumn>[] = [
 const LadderRankings: React.FC<LadderRankingsProps> = ({ users }) => {
     const data = users.map(user => ({ ...user, key: user.id }));
 
-    return <Table columns={columns} dataSource={data} size="middle" pagination={false} />;
+    return <Table columns={columns} dataSource={data} pagination={false} size="middle" bordered />;
 };
 
 export default LadderRankings;
-
-const UsernameWrapper = styled.span`
-    margin-left: ${({ theme }) => theme.spacing(1)};
-`;
 
 const RatingWrapper = styled.div`
     display: flex;

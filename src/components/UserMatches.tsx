@@ -5,6 +5,7 @@ import { Empty, Spin, List, Avatar, Tag, Button } from 'antd';
 import { getMatchOpponent, getMatchResultText } from 'utils/match';
 import colors from 'style/theme/colors';
 import { USER_MATCHES_DEFAULT_LIMIT } from 'utils/constants';
+import formatDate from 'utils/formatDate';
 
 const UserMatches: React.FC = () => {
     const [lastFetchedPage, setLastFetchedPage] = useState(0);
@@ -91,7 +92,7 @@ const UserMatches: React.FC = () => {
             dataSource={matches}
             renderItem={match => {
                 const opponent = getMatchOpponent(match, authedUserId);
-                const matchDate = new Date(parseInt(match.createdAt!));
+                const matchDate = formatDate(match.createdAt!);
                 const matchResultText = getMatchResultText(match, authedUserId);
                 const matchResultColor =
                     matchResultText === 'Win'
@@ -104,9 +105,7 @@ const UserMatches: React.FC = () => {
                     <List.Item
                         extra={
                             <ListItemExtra>
-                                <ListItemDescription>
-                                    {matchDate.toLocaleDateString()}
-                                </ListItemDescription>
+                                <ListItemDescription>{matchDate}</ListItemDescription>
                                 <MatchResultTag color={matchResultColor}>
                                     {matchResultText}
                                 </MatchResultTag>
