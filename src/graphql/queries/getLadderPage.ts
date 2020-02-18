@@ -1,7 +1,13 @@
 import { gql } from 'apollo-boost';
+import matchFields from 'graphql/fragments/matchFields';
 
 export default gql`
-    query getLadderPage($id: ID!, $ladderUsersOrderBy: LadderUsersOrderBy) {
+    query getLadderPage(
+        $id: ID!
+        $ladderUsersOrderBy: LadderUsersOrderBy
+        $matchOffset: Int
+        $matchLimit: Int
+    ) {
         ladder(id: $id) {
             id
             ladderName
@@ -14,24 +20,11 @@ export default gql`
                 rank
                 ladderJoinDate
             }
-            matches {
-                id
-                createdAt
-                user1 {
-                    id
-                    userName
-                    avatarUrl
-                }
-                user2 {
-                    id
-                    userName
-                    avatarUrl
-                }
-                winner {
-                    id
-                    userName
-                }
+            matches(offset: $matchOffset, limit: $matchLimit) {
+                ...matchFields
             }
         }
     }
+
+    ${matchFields}
 `;

@@ -30,6 +30,11 @@ export type LadderUsersArgs = {
     orderBy?: Maybe<LadderUsersOrderBy>;
 };
 
+export type LadderMatchesArgs = {
+    offset?: Maybe<Scalars['Int']>;
+    limit?: Maybe<Scalars['Int']>;
+};
+
 export enum LadderUsersOrderBy {
     RankDesc = 'rank_DESC',
 }
@@ -182,6 +187,8 @@ export type GetLadderMatchesQuery = { __typename?: 'Query' } & {
 export type GetLadderPageQueryVariables = {
     id: Scalars['ID'];
     ladderUsersOrderBy?: Maybe<LadderUsersOrderBy>;
+    matchOffset?: Maybe<Scalars['Int']>;
+    matchLimit?: Maybe<Scalars['Int']>;
 };
 
 export type GetLadderPageQuery = { __typename?: 'Query' } & {
@@ -199,19 +206,7 @@ export type GetLadderPageQuery = { __typename?: 'Query' } & {
                         | 'ladderJoinDate'
                     >
                 >;
-                matches: Array<
-                    { __typename?: 'Match' } & Pick<Match, 'id' | 'createdAt'> & {
-                            user1: { __typename?: 'User' } & Pick<
-                                User,
-                                'id' | 'userName' | 'avatarUrl'
-                            >;
-                            user2: { __typename?: 'User' } & Pick<
-                                User,
-                                'id' | 'userName' | 'avatarUrl'
-                            >;
-                            winner: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'userName'>>;
-                        }
-                >;
+                matches: Array<{ __typename?: 'Match' } & MatchFieldsFragment>;
             }
     >;
 };
@@ -457,7 +452,12 @@ export type GetLadderMatchesQueryResult = ApolloReactCommon.QueryResult<
     GetLadderMatchesQueryVariables
 >;
 export const GetLadderPageDocument = gql`
-    query getLadderPage($id: ID!, $ladderUsersOrderBy: LadderUsersOrderBy) {
+    query getLadderPage(
+        $id: ID!
+        $ladderUsersOrderBy: LadderUsersOrderBy
+        $matchOffset: Int
+        $matchLimit: Int
+    ) {
         ladder(id: $id) {
             id
             ladderName
@@ -470,26 +470,12 @@ export const GetLadderPageDocument = gql`
                 rank
                 ladderJoinDate
             }
-            matches {
-                id
-                createdAt
-                user1 {
-                    id
-                    userName
-                    avatarUrl
-                }
-                user2 {
-                    id
-                    userName
-                    avatarUrl
-                }
-                winner {
-                    id
-                    userName
-                }
+            matches(offset: $matchOffset, limit: $matchLimit) {
+                ...matchFields
             }
         }
     }
+    ${MatchFieldsFragmentDoc}
 `;
 
 /**
@@ -506,6 +492,8 @@ export const GetLadderPageDocument = gql`
  *   variables: {
  *      id: // value for 'id'
  *      ladderUsersOrderBy: // value for 'ladderUsersOrderBy'
+ *      matchOffset: // value for 'matchOffset'
+ *      matchLimit: // value for 'matchLimit'
  *   },
  * });
  */
