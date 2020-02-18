@@ -1,20 +1,24 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Table } from 'antd';
+import { Table, Spin } from 'antd';
 import { ColumnProps } from 'antd/es/table';
-import { GetLadderPageQuery } from 'graphql/generated';
+import {
+    GetLadderRankingsQuery,
+    useGetLadderRankingsQuery,
+    LadderUsersOrderBy,
+} from 'graphql/generated';
 import RatingDelta from 'components/RatingDelta';
 import AvatarAndUsername from 'components/AvatarAndUsername';
 import formatDate from 'utils/formatDate';
 
-type GetLadderPageQueryUser = NonNullable<GetLadderPageQuery['ladder']>['users'][0];
-type GetLadderPageQueryUserColumn = GetLadderPageQueryUser & { key: string };
+type GetLadderRankingsQueryUser = NonNullable<GetLadderRankingsQuery['ladder']>['users'][0];
+type GetLadderRankingsQueryUserColumn = GetLadderRankingsQueryUser & { key: string };
 
 interface LadderRankingsProps {
-    users: GetLadderPageQueryUser[];
+    ladderId: string;
 }
 
-const columns: ColumnProps<GetLadderPageQueryUserColumn>[] = [
+const columns: ColumnProps<GetLadderRankingsQueryUserColumn>[] = [
     {
         title: 'Rank',
         dataIndex: 'rank',
@@ -52,10 +56,27 @@ const columns: ColumnProps<GetLadderPageQueryUserColumn>[] = [
     },
 ];
 
-const LadderRankings: React.FC<LadderRankingsProps> = ({ users }) => {
-    const data = users.map(user => ({ ...user, key: user.id }));
+const LadderRankings: React.FC<LadderRankingsProps> = ({ ladderId }) => {
+    const { loading, data } = useGetLadderRankingsQuery({
+        variables: {
+            id: ladderId,
+            ladderUsersOrderBy: LadderUsersOrderBy.RankDesc,
+        },
+    });
 
-    return <Table columns={columns} dataSource={data} pagination={false} size="middle" bordered />;
+    if (loading) {
+        return (
+            <SpinContainer>
+                <Spin />
+            </SpinContainer>
+        );
+    }
+
+    const users = data?.ladder?.users
+        ? data.ladder.users.map(user => ({ ...user, key: user.id }))
+        : [];
+
+    return <Table columns={columns} dataSource={users} pagination={false} size="middle" bordered />;
 };
 
 export default LadderRankings;
@@ -67,4 +88,8 @@ const RatingWrapper = styled.div`
 const RatingValue = styled.span`
     color: ${({ theme }) => theme.colors.primary};
     margin-right: ${({ theme }) => theme.spacing(0)};
+`;
+
+const SpinContainer = styled.div`
+    text-align: center;
 `;

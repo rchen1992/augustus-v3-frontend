@@ -184,16 +184,22 @@ export type GetLadderMatchesQuery = { __typename?: 'Query' } & {
     >;
 };
 
-export type GetLadderPageQueryVariables = {
+export type GetLadderNameQueryVariables = {
     id: Scalars['ID'];
-    ladderUsersOrderBy?: Maybe<LadderUsersOrderBy>;
-    matchOffset?: Maybe<Scalars['Int']>;
-    matchLimit?: Maybe<Scalars['Int']>;
 };
 
-export type GetLadderPageQuery = { __typename?: 'Query' } & {
+export type GetLadderNameQuery = { __typename?: 'Query' } & {
+    ladder: Maybe<{ __typename?: 'Ladder' } & Pick<Ladder, 'id' | 'ladderName'>>;
+};
+
+export type GetLadderRankingsQueryVariables = {
+    id: Scalars['ID'];
+    ladderUsersOrderBy?: Maybe<LadderUsersOrderBy>;
+};
+
+export type GetLadderRankingsQuery = { __typename?: 'Query' } & {
     ladder: Maybe<
-        { __typename?: 'Ladder' } & Pick<Ladder, 'id' | 'ladderName'> & {
+        { __typename?: 'Ladder' } & Pick<Ladder, 'id'> & {
                 users: Array<
                     { __typename?: 'User' } & Pick<
                         User,
@@ -206,7 +212,6 @@ export type GetLadderPageQuery = { __typename?: 'Query' } & {
                         | 'ladderJoinDate'
                     >
                 >;
-                matches: Array<{ __typename?: 'Match' } & MatchFieldsFragment>;
             }
     >;
 };
@@ -451,16 +456,60 @@ export type GetLadderMatchesQueryResult = ApolloReactCommon.QueryResult<
     GetLadderMatchesQuery,
     GetLadderMatchesQueryVariables
 >;
-export const GetLadderPageDocument = gql`
-    query getLadderPage(
-        $id: ID!
-        $ladderUsersOrderBy: LadderUsersOrderBy
-        $matchOffset: Int
-        $matchLimit: Int
-    ) {
+export const GetLadderNameDocument = gql`
+    query getLadderName($id: ID!) {
         ladder(id: $id) {
             id
             ladderName
+        }
+    }
+`;
+
+/**
+ * __useGetLadderNameQuery__
+ *
+ * To run a query within a React component, call `useGetLadderNameQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetLadderNameQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetLadderNameQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetLadderNameQuery(
+    baseOptions?: ApolloReactHooks.QueryHookOptions<GetLadderNameQuery, GetLadderNameQueryVariables>
+) {
+    return ApolloReactHooks.useQuery<GetLadderNameQuery, GetLadderNameQueryVariables>(
+        GetLadderNameDocument,
+        baseOptions
+    );
+}
+export function useGetLadderNameLazyQuery(
+    baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+        GetLadderNameQuery,
+        GetLadderNameQueryVariables
+    >
+) {
+    return ApolloReactHooks.useLazyQuery<GetLadderNameQuery, GetLadderNameQueryVariables>(
+        GetLadderNameDocument,
+        baseOptions
+    );
+}
+export type GetLadderNameQueryHookResult = ReturnType<typeof useGetLadderNameQuery>;
+export type GetLadderNameLazyQueryHookResult = ReturnType<typeof useGetLadderNameLazyQuery>;
+export type GetLadderNameQueryResult = ApolloReactCommon.QueryResult<
+    GetLadderNameQuery,
+    GetLadderNameQueryVariables
+>;
+export const GetLadderRankingsDocument = gql`
+    query getLadderRankings($id: ID!, $ladderUsersOrderBy: LadderUsersOrderBy) {
+        ladder(id: $id) {
+            id
             users(orderBy: $ladderUsersOrderBy) {
                 id
                 userName
@@ -470,57 +519,54 @@ export const GetLadderPageDocument = gql`
                 rank
                 ladderJoinDate
             }
-            matches(offset: $matchOffset, limit: $matchLimit) {
-                ...matchFields
-            }
         }
     }
-    ${MatchFieldsFragmentDoc}
 `;
 
 /**
- * __useGetLadderPageQuery__
+ * __useGetLadderRankingsQuery__
  *
- * To run a query within a React component, call `useGetLadderPageQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetLadderPageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetLadderRankingsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetLadderRankingsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetLadderPageQuery({
+ * const { data, loading, error } = useGetLadderRankingsQuery({
  *   variables: {
  *      id: // value for 'id'
  *      ladderUsersOrderBy: // value for 'ladderUsersOrderBy'
- *      matchOffset: // value for 'matchOffset'
- *      matchLimit: // value for 'matchLimit'
  *   },
  * });
  */
-export function useGetLadderPageQuery(
-    baseOptions?: ApolloReactHooks.QueryHookOptions<GetLadderPageQuery, GetLadderPageQueryVariables>
-) {
-    return ApolloReactHooks.useQuery<GetLadderPageQuery, GetLadderPageQueryVariables>(
-        GetLadderPageDocument,
-        baseOptions
-    );
-}
-export function useGetLadderPageLazyQuery(
-    baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-        GetLadderPageQuery,
-        GetLadderPageQueryVariables
+export function useGetLadderRankingsQuery(
+    baseOptions?: ApolloReactHooks.QueryHookOptions<
+        GetLadderRankingsQuery,
+        GetLadderRankingsQueryVariables
     >
 ) {
-    return ApolloReactHooks.useLazyQuery<GetLadderPageQuery, GetLadderPageQueryVariables>(
-        GetLadderPageDocument,
+    return ApolloReactHooks.useQuery<GetLadderRankingsQuery, GetLadderRankingsQueryVariables>(
+        GetLadderRankingsDocument,
         baseOptions
     );
 }
-export type GetLadderPageQueryHookResult = ReturnType<typeof useGetLadderPageQuery>;
-export type GetLadderPageLazyQueryHookResult = ReturnType<typeof useGetLadderPageLazyQuery>;
-export type GetLadderPageQueryResult = ApolloReactCommon.QueryResult<
-    GetLadderPageQuery,
-    GetLadderPageQueryVariables
+export function useGetLadderRankingsLazyQuery(
+    baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+        GetLadderRankingsQuery,
+        GetLadderRankingsQueryVariables
+    >
+) {
+    return ApolloReactHooks.useLazyQuery<GetLadderRankingsQuery, GetLadderRankingsQueryVariables>(
+        GetLadderRankingsDocument,
+        baseOptions
+    );
+}
+export type GetLadderRankingsQueryHookResult = ReturnType<typeof useGetLadderRankingsQuery>;
+export type GetLadderRankingsLazyQueryHookResult = ReturnType<typeof useGetLadderRankingsLazyQuery>;
+export type GetLadderRankingsQueryResult = ApolloReactCommon.QueryResult<
+    GetLadderRankingsQuery,
+    GetLadderRankingsQueryVariables
 >;
 export const GetLadderUsersDocument = gql`
     query getLadderUsers($id: ID!) {

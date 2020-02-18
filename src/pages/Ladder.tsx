@@ -3,41 +3,39 @@ import AppLayout from 'components/AppLayout';
 import SectionHeader from 'components/SectionHeader';
 import LadderRankings from 'components/LadderRankings';
 import LadderMatches from 'components/LadderMatches';
-import media from 'style/media';
 import styled from 'styled-components';
-import { useGetLadderPageQuery, LadderUsersOrderBy } from 'graphql/generated';
-import FullscreenSpin from 'components/FullscreenSpin';
+import { useGetLadderNameQuery } from 'graphql/generated';
 import { useParams } from 'react-router-dom';
 
 const Ladder = () => {
     const { ladderId } = useParams();
-    const { loading, data } = useGetLadderPageQuery({
+    const { data } = useGetLadderNameQuery({
         variables: {
             id: ladderId!,
-            ladderUsersOrderBy: LadderUsersOrderBy.RankDesc,
         },
     });
 
-    const toRender = loading ? (
-        <FullscreenSpin />
-    ) : (
-        <>
+    return (
+        <AppLayout>
+            <LadderName>{data?.ladder?.ladderName}</LadderName>
             <SectionHeader title="Rankings" subtitle="View player rankings" avatarIcon="trophy">
-                <LadderRankings users={data?.ladder?.users || []} />
+                <LadderRankings ladderId={ladderId!} />
             </SectionHeader>
             <LadderMatchesSection>
                 <SectionHeader title="Matches" subtitle="View ladder matches" avatarIcon="team">
-                    <LadderMatches matches={data?.ladder?.matches || []} />
+                    <LadderMatches ladderId={ladderId!} />
                 </SectionHeader>
             </LadderMatchesSection>
-        </>
+        </AppLayout>
     );
-
-    return <AppLayout>{toRender}</AppLayout>;
 };
 
 export default Ladder;
 
 const LadderMatchesSection = styled.div`
     margin-top: ${({ theme }) => theme.spacing(4)};
+`;
+
+const LadderName = styled.h1`
+    text-align: center;
 `;

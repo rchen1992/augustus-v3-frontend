@@ -1,18 +1,19 @@
 import React from 'react';
-import { Table } from 'antd';
+import { Table, Spin } from 'antd';
 import { ColumnProps } from 'antd/es/table';
-import { GetLadderPageQuery } from 'graphql/generated';
+import { GetLadderMatchesQuery, useGetLadderMatchesQuery } from 'graphql/generated';
 import AvatarAndUsername from 'components/AvatarAndUsername';
 import formatDate from 'utils/formatDate';
+import styled from 'styled-components';
 
-type GetLadderPageQueryMatch = NonNullable<GetLadderPageQuery['ladder']>['matches'][0];
-type GetLadderPageQueryMatchColumn = GetLadderPageQueryMatch & { key: string };
+type GetLadderMatchesQueryMatch = NonNullable<GetLadderMatchesQuery['ladder']>['matches'][0];
+type GetLadderMatchesQueryMatchColumm = GetLadderMatchesQueryMatch & { key: string };
 
 interface LadderMatchesProps {
-    matches: GetLadderPageQueryMatch[];
+    ladderId: string;
 }
 
-const columns: ColumnProps<GetLadderPageQueryMatchColumn>[] = [
+const columns: ColumnProps<GetLadderMatchesQueryMatchColumm>[] = [
     {
         title: 'Date',
         key: 'date',
@@ -51,10 +52,35 @@ const columns: ColumnProps<GetLadderPageQueryMatchColumn>[] = [
     },
 ];
 
-const LadderMatches: React.FC<LadderMatchesProps> = ({ matches }) => {
-    const data = matches.map(match => ({ ...match, key: match.id }));
+const LadderMatches: React.FC<LadderMatchesProps> = ({ ladderId }) => {
+    const { loading, data } = useGetLadderMatchesQuery({
+        variables: {
+            id: ladderId,
+        },
+    });
 
-    return <Table columns={columns} dataSource={data} size="small" pagination={false} />;
+    if (loading) {
+        return (
+            <SpinContainer>
+                <Spin />
+            </SpinContainer>
+        );
+    }
+
+    const matches = data?.ladder?.matches
+        ? data.ladder.matches.map(match => ({ ...match, key: match.id }))
+        : [];
+
+    return <Table columns={columns} dataSource={matches} size="small" pagination={false} />;
 };
 
 export default LadderMatches;
+
+const LoadMoreContainer = styled.div`
+    text-align: center;
+    padding: ${({ theme }) => theme.spacing(2)};
+`;
+
+const SpinContainer = styled.div`
+    text-align: center;
+`;

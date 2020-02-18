@@ -7,8 +7,8 @@ import {
     useGetLadderUsersLazyQuery,
     GetMyMatchesQuery,
     GetLadderMatchesQuery,
+    GetLadderRankingsDocument,
     NewMatchMutation,
-    useGetLadderPageQuery,
     LadderUsersOrderBy,
 } from 'graphql/generated';
 import GET_USER_MATCHES from 'graphql/queries/getMyMatches';
@@ -18,6 +18,7 @@ import filterOptionsByName from 'utils/selectFilterOptionsByName';
 import { RadioChangeEvent } from 'antd/lib/radio';
 import { DataProxy } from 'apollo-cache';
 import useGraphQLErrorBox from 'hooks/useGraphQLErrorBox';
+import { FetchResult } from 'apollo-boost';
 
 const { Option } = Select;
 
@@ -80,6 +81,9 @@ function updateLadderMatches(cache: DataProxy, newMatchData?: NewMatchMutation |
     try {
         const cachedData = cache.readQuery({
             query: GET_LADDER_MATCHES,
+            variables: {
+                id: newMatchData!.newMatch.ladder.id,
+            },
         }) as GetLadderMatchesQuery;
 
         if (cachedData?.ladder?.matches && newMatchData?.newMatch) {
@@ -116,7 +120,6 @@ const LogMatchModal: React.FC = () => {
         data: myLaddersData,
         refetch: myLaddersRefetch,
     } = useGetMyLaddersQuery();
-    const { refetch: ladderPageRefetch } = useGetLadderPageQuery();
 
     const authedUserId = meData?.me?.id;
     const ladders = myLaddersData?.me?.ladders;
@@ -125,14 +128,24 @@ const LogMatchModal: React.FC = () => {
     );
 
     const [newMatch, { loading: newMatchLoading }] = useNewMatchMutation({
+        refetchQueries: ({ data }: FetchResult<NewMatchMutation>) => {
+            /**
+             * Refetch rankings on the specific ladder page.
+             */
+            return [
+                {
+                    query: GetLadderRankingsDocument,
+                    variables: {
+                        id: data!.newMatch.ladder.id,
+                        ladderUsersOrderBy: LadderUsersOrderBy.RankDesc,
+                    },
+                },
+            ];
+        },
         update(cache, { data }) {
             updateMyMatches(cache, data);
             updateLadderMatches(cache, data);
             myLaddersRefetch();
-            ladderPageRefetch({
-                id: ladderId,
-                ladderUsersOrderBy: LadderUsersOrderBy.RankDesc,
-            });
         },
     });
 
