@@ -6,14 +6,45 @@ import { getMatchOpponent, getMatchResultText } from 'utils/match';
 import colors from 'style/theme/colors';
 import { USER_MATCHES_DEFAULT_LIMIT } from 'utils/constants';
 import formatDate from 'utils/formatDate';
+import useLoadMorePaginationButton from 'hooks/useLoadMorePaginationButton';
 
 const UserMatches: React.FC = () => {
-    const [lastFetchedPage, setLastFetchedPage] = useState(0);
-    const [fetchMoreLoading, setFetchMoreLoading] = useState(false);
     const { loading, data, fetchMore } = useGetMyMatchesQuery({
         variables: {
             offset: 0,
             limit: USER_MATCHES_DEFAULT_LIMIT,
+        },
+    });
+
+    const { loadMoreButton } = useLoadMorePaginationButton({
+        fetchPage: (newPage: number) => {
+            return fetchMore({
+                /**
+                 * By default, fetchMore will use the same
+                 * variables of the original query.
+                 */
+                variables: {
+                    offset: newPage * USER_MATCHES_DEFAULT_LIMIT,
+                },
+                /**
+                 * Cache update function.
+                 * We simply append the results to the end of
+                 * the array of matches.
+                 */
+                updateQuery: (prev, { fetchMoreResult }) => {
+                    if (!fetchMoreResult || !fetchMoreResult.me?.matches) {
+                        return prev;
+                    }
+
+                    return {
+                        ...prev,
+                        me: {
+                            ...prev.me,
+                            matches: [...prev.me!.matches, ...fetchMoreResult.me.matches],
+                        },
+                    } as GetMyMatchesQuery;
+                },
+            });
         },
     });
 
@@ -39,51 +70,6 @@ const UserMatches: React.FC = () => {
     }
 
     const hasFetchedAll = matches.length >= matchCount!;
-
-    const fetchPage = (newPage: number) => {
-        return fetchMore({
-            /**
-             * By default, fetchMore will use the same
-             * variables of the original query.
-             */
-            variables: {
-                offset: newPage * USER_MATCHES_DEFAULT_LIMIT,
-            },
-            /**
-             * Cache update function.
-             * We simply append the results to the end of
-             * the array of matches.
-             */
-            updateQuery: (prev, { fetchMoreResult }) => {
-                if (!fetchMoreResult || !fetchMoreResult.me?.matches) {
-                    return prev;
-                }
-
-                return {
-                    ...prev,
-                    me: {
-                        ...prev.me,
-                        matches: [...prev.me!.matches, ...fetchMoreResult.me.matches],
-                    },
-                } as GetMyMatchesQuery;
-            },
-        });
-    };
-
-    const onLoadMore = async () => {
-        setFetchMoreLoading(true);
-        await fetchPage(lastFetchedPage + 1);
-        setLastFetchedPage(lastFetchedPage + 1);
-        setFetchMoreLoading(false);
-    };
-
-    const loadMoreButton = !hasFetchedAll ? (
-        <LoadMoreContainer>
-            <Button onClick={onLoadMore} loading={fetchMoreLoading}>
-                See more
-            </Button>
-        </LoadMoreContainer>
-    ) : null;
 
     return (
         <List
@@ -120,7 +106,7 @@ const UserMatches: React.FC = () => {
                     </List.Item>
                 );
             }}
-            loadMore={loadMoreButton}
+            loadMore={!hasFetchedAll ? loadMoreButton : null}
         />
     );
 };
@@ -146,9 +132,4 @@ const ListItemDescription = styled.div`
 const MatchResultTag = styled(Tag)`
     margin-right: 0;
     margin-top: ${({ theme }) => theme.spacing(0)};
-`;
-
-const LoadMoreContainer = styled.div`
-    text-align: center;
-    padding: ${({ theme }) => theme.spacing(2)};
 `;
