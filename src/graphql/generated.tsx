@@ -24,6 +24,7 @@ export type Ladder = Node & {
     userMatchStats?: Maybe<UserMatchStats>;
     users: Array<User>;
     matches: Array<Match>;
+    matchCount?: Maybe<Scalars['Int']>;
 };
 
 export type LadderUsersArgs = {
@@ -174,11 +175,13 @@ export type NewMatchMutation = { __typename?: 'Mutation' } & {
 
 export type GetLadderMatchesQueryVariables = {
     id: Scalars['ID'];
+    offset?: Maybe<Scalars['Int']>;
+    limit?: Maybe<Scalars['Int']>;
 };
 
 export type GetLadderMatchesQuery = { __typename?: 'Query' } & {
     ladder: Maybe<
-        { __typename?: 'Ladder' } & Pick<Ladder, 'id'> & {
+        { __typename?: 'Ladder' } & Pick<Ladder, 'id' | 'matchCount'> & {
                 matches: Array<{ __typename?: 'Match' } & MatchFieldsFragment>;
             }
     >;
@@ -401,12 +404,13 @@ export type NewMatchMutationOptions = ApolloReactCommon.BaseMutationOptions<
     NewMatchMutationVariables
 >;
 export const GetLadderMatchesDocument = gql`
-    query getLadderMatches($id: ID!) {
+    query getLadderMatches($id: ID!, $offset: Int, $limit: Int) {
         ladder(id: $id) {
             id
-            matches {
+            matches(offset: $offset, limit: $limit) {
                 ...matchFields
             }
+            matchCount
         }
     }
     ${MatchFieldsFragmentDoc}
@@ -425,6 +429,8 @@ export const GetLadderMatchesDocument = gql`
  * const { data, loading, error } = useGetLadderMatchesQuery({
  *   variables: {
  *      id: // value for 'id'
+ *      offset: // value for 'offset'
+ *      limit: // value for 'limit'
  *   },
  * });
  */

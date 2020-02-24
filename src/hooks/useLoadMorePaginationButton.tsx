@@ -5,13 +5,14 @@ import { ApolloQueryResult } from 'apollo-boost';
 
 interface Options {
     fetchPage: (newPage: number) => Promise<ApolloQueryResult<any>>;
+    renderContainer?: boolean;
 }
 
 /**
  * Custom hook used to handle sequential loading of additional pages of data.
  * Returns a load more button and keeps track of page fetch and loading state.
  */
-export default ({ fetchPage }: Options) => {
+export default ({ fetchPage, renderContainer }: Options) => {
     const [fetchMoreLoading, setFetchMoreLoading] = useState(false);
     const [lastFetchedPage, setLastFetchedPage] = useState(0);
 
@@ -22,12 +23,16 @@ export default ({ fetchPage }: Options) => {
         setFetchMoreLoading(false);
     };
 
-    const loadMoreButton = (
-        <LoadMoreContainer>
-            <Button onClick={onLoadMore} loading={fetchMoreLoading}>
-                See more
-            </Button>
-        </LoadMoreContainer>
+    const button = (
+        <Button onClick={onLoadMore} loading={fetchMoreLoading}>
+            See more
+        </Button>
+    );
+
+    const loadMoreButton = renderContainer ? (
+        <LoadMoreContainer>{button}</LoadMoreContainer>
+    ) : (
+        button
     );
 
     return {

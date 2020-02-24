@@ -46,6 +46,7 @@ const UserMatches: React.FC = () => {
                 },
             });
         },
+        renderContainer: true,
     });
 
     const authedUserId = data?.me?.id;

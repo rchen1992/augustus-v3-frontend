@@ -5,6 +5,8 @@ import { GetLadderMatchesQuery, useGetLadderMatchesQuery } from 'graphql/generat
 import AvatarAndUsername from 'components/AvatarAndUsername';
 import formatDate from 'utils/formatDate';
 import styled from 'styled-components';
+import useLoadMorePaginationButton from 'hooks/useLoadMorePaginationButton';
+import { LADDER_MATCHES_DEFAULT_LIMIT } from 'utils/constants';
 
 type GetLadderMatchesQueryMatch = NonNullable<GetLadderMatchesQuery['ladder']>['matches'][0];
 type GetLadderMatchesQueryMatchColumm = GetLadderMatchesQueryMatch & { key: string };
@@ -53,34 +55,66 @@ const columns: ColumnProps<GetLadderMatchesQueryMatchColumm>[] = [
 ];
 
 const LadderMatches: React.FC<LadderMatchesProps> = ({ ladderId }) => {
-    const { loading, data } = useGetLadderMatchesQuery({
+    const { loading, data, fetchMore } = useGetLadderMatchesQuery({
         variables: {
             id: ladderId,
+            offset: 0,
+            limit: LADDER_MATCHES_DEFAULT_LIMIT,
         },
     });
 
-    if (loading) {
+    const { loadMoreButton } = useLoadMorePaginationButton({
+        fetchPage: (newPage: number) => {
+            return fetchMore({
+                variables: {
+                    offset: newPage * LADDER_MATCHES_DEFAULT_LIMIT,
+                },
+                updateQuery: (prev, { fetchMoreResult }) => {
+                    if (!fetchMoreResult || !fetchMoreResult.ladder?.matches) {
+                        return prev;
+                    }
+
+                    return {
+                        ...prev,
+                        ladder: {
+                            ...prev.ladder,
+                            matches: [...prev.ladder!.matches, ...fetchMoreResult.ladder.matches],
+                        },
+                    } as GetLadderMatchesQuery;
+                },
+            });
+        },
+    });
+
+    if (loading || !data?.ladder) {
         return (
-            <SpinContainer>
+            <CenterContainer>
                 <Spin />
-            </SpinContainer>
+            </CenterContainer>
         );
     }
 
-    const matches = data?.ladder?.matches
+    const matches = data.ladder.matches
         ? data.ladder.matches.map(match => ({ ...match, key: match.id }))
         : [];
 
-    return <Table columns={columns} dataSource={matches} size="small" pagination={false} />;
+    const fetchedAll = matches.length >= data.ladder.matchCount!;
+
+    return (
+        <Table
+            columns={columns}
+            dataSource={matches}
+            size="small"
+            pagination={false}
+            footer={
+                fetchedAll ? undefined : () => <CenterContainer>{loadMoreButton}</CenterContainer>
+            }
+        />
+    );
 };
 
 export default LadderMatches;
 
-const LoadMoreContainer = styled.div`
-    text-align: center;
-    padding: ${({ theme }) => theme.spacing(2)};
-`;
-
-const SpinContainer = styled.div`
+const CenterContainer = styled.div`
     text-align: center;
 `;
