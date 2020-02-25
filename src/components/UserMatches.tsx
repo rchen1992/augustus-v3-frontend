@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useGetMyMatchesQuery, GetMyMatchesQuery } from 'graphql/generated';
 import styled from 'styled-components';
-import { Empty, Spin, List, Avatar, Tag, Button } from 'antd';
+import { Empty, Spin, List, Avatar, Tag } from 'antd';
 import { getMatchOpponent, getMatchResultText } from 'utils/match';
 import colors from 'style/theme/colors';
 import { USER_MATCHES_DEFAULT_LIMIT } from 'utils/constants';
