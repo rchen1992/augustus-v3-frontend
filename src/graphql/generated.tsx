@@ -407,7 +407,7 @@ export const GetLadderMatchesDocument = gql`
     query getLadderMatches($id: ID!, $offset: Int, $limit: Int) {
         ladder(id: $id) {
             id
-            matches(offset: $offset, limit: $limit) {
+            matches(offset: $offset, limit: $limit) @connection(key: "matches") {
                 ...matchFields
             }
             matchCount

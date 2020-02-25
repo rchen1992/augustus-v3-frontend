@@ -91,6 +91,9 @@ function updateLadderMatches(cache: DataProxy, newMatchData?: NewMatchMutation |
 
             cache.writeQuery({
                 query: GET_LADDER_MATCHES,
+                variables: {
+                    id: newMatchData!.newMatch.ladder.id,
+                },
                 data: {
                     ladder: {
                         ...ladder,
