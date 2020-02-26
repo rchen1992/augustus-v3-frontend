@@ -20,41 +20,57 @@ const App: React.FC = () => {
     const clientRef = React.useRef<ApolloClient<unknown> | null>(null);
 
     /**
-     * If user is authed, we need to set Authorization token
-     * from Auth0 on every request to authenticate the user on the backend.
+     * We don't want to render anything until we are done loading,
+     * because we don't know if the current user is authed or not.
      *
-     * If user isn't authed (which is possible in our app because we have public pages),
-     * we won't send any token at all.
+     * Once we are done loading and we know whether the user is authed,
+     * we can construct an Apollo client with the correct closure over the
+     * `user` and `getTokenSilently` variables.
      *
-     * Here we reconstruct ApolloClient in a `useEffect` whenever auth status changes.
+     * Important: we can only provide a single Apollo client
+     * to ApolloProvider the very first time it renders.
+     * If we try to dynamically re-construct Apollo client when props/state changes,
+     * and then re-render ApolloProvider with the new client, the dev tools
+     * seem to break.
+     * What we are doing here works because we only ever create the Apollo client
+     * once after we have determined the auth state (and we save it in a ref
+     * so that we can check if it already exists), and then we render ApolloProvider
+     * for the first time afterwards.
      */
-    React.useEffect(() => {
+    if (loading) {
+        return <FullscreenSpin />;
+    } else if (!clientRef.current) {
         clientRef.current = new ApolloClient({
             uri: process.env.REACT_APP_GRAPHQL_API_ENDPOINT,
             credentials: 'include',
-            request:
-                user && getTokenSilently
-                    ? async operation => {
-                          const token = await getTokenSilently();
+            request: async operation => {
+                /**
+                 * If user isn't authed (which is possible in our app because we have public pages),
+                 * we won't send any token at all.
+                 */
+                if (!user || !getTokenSilently) {
+                    return;
+                }
 
-                          operation.setContext((context: Record<string, any>) => ({
-                              headers: {
-                                  ...context.headers,
-                                  Authorization: `Bearer ${token}`,
-                                  userData: JSON.stringify({
-                                      nickname: user.nickname,
-                                      email: user.email,
-                                      avatar_url: user.picture,
-                                  }),
-                              },
-                          }));
-                      }
-                    : undefined,
+                /**
+                 * If user is authed, we need to set Authorization token
+                 * from Auth0 on every request to authenticate the user on the backend.
+                 */
+                const token = await getTokenSilently();
+
+                operation.setContext((context: Record<string, any>) => ({
+                    headers: {
+                        ...context.headers,
+                        Authorization: `Bearer ${token}`,
+                        userData: JSON.stringify({
+                            nickname: user.nickname,
+                            email: user.email,
+                            avatar_url: user.picture,
+                        }),
+                    },
+                }));
+            },
         });
-    }, [getTokenSilently, user]);
-
-    if (loading) {
-        return <FullscreenSpin />;
     }
 
     const router = (
@@ -70,11 +86,7 @@ const App: React.FC = () => {
         </Router>
     );
 
-    return clientRef.current ? (
-        <ApolloProvider client={clientRef.current}>{router}</ApolloProvider>
-    ) : (
-        router
-    );
+    return <ApolloProvider client={clientRef.current}>{router}</ApolloProvider>;
 };
 
 export default App;
