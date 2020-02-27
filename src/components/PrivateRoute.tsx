@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
-import { Route, RouteProps, RouteComponentProps } from 'react-router-dom';
+import { Route, RouteProps, RouteComponentProps, useLocation } from 'react-router-dom';
 import { useAuth0 } from 'providers/Auth0Provider';
 
 type RouterRender = (props: RouteComponentProps<any>) => React.ReactNode;
 
 const PrivateRoute: React.FC<RouteProps> = ({ component: Component, path, ...rest }) => {
     const { loading, isAuthenticated, loginWithRedirect } = useAuth0();
+    const location = useLocation();
 
     useEffect(() => {
         if (loading || isAuthenticated) {
@@ -13,7 +14,7 @@ const PrivateRoute: React.FC<RouteProps> = ({ component: Component, path, ...res
         }
 
         loginWithRedirect({
-            appState: { targetUrl: path },
+            appState: { targetUrl: location.pathname },
         });
     }, [loading, isAuthenticated, loginWithRedirect, path]);
 
