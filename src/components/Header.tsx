@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import LogMatchModal from 'components/LogMatchModal';
+import AccountMenu from 'components/AccountMenu';
 import { ReactComponent as Logo } from 'assets/wreath.svg';
 import { useAuth0 } from 'providers/Auth0Provider';
 import { Avatar } from 'antd';
@@ -20,7 +21,9 @@ const Header: React.FC = () => {
             {isAuthenticated && (
                 <ControlsWrapper>
                     <LogMatchModal />
-                    <StyledAvatar src={user!.picture} />
+                    <AccountMenu>
+                        <StyledAvatar src={user!.picture} />
+                    </AccountMenu>
                 </ControlsWrapper>
             )}
         </Container>
@@ -66,4 +69,5 @@ const ControlsWrapper = styled.div``;
 
 const StyledAvatar = styled(Avatar)`
     margin-left: ${({ theme }) => theme.spacing(1)};
+    cursor: pointer;
 `;
