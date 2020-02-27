@@ -42,8 +42,8 @@ const Auth0Provider: React.FC<Auth0ProviderProps> = ({
             setAuth0(auth0FromHook);
 
             if (window.location.search.includes('code=')) {
-                const { appState } = await auth0FromHook.handleRedirectCallback();
-                onRedirectCallback(appState);
+                const redirectResult = await auth0FromHook.handleRedirectCallback();
+                onRedirectCallback(redirectResult);
             }
 
             const isAuthenticated = await auth0FromHook.isAuthenticated();
