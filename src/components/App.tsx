@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Router, Switch, Route } from 'react-router-dom';
 import history from 'routerHistory';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { useAuth0 } from 'providers/Auth0Provider';
 import LandingPage from 'pages/LandingPage';
+import LadderInvite from 'pages/LadderInvite';
 import Home from 'pages/Home';
 import Ladder from 'pages/Ladder';
 import PrivateRoute from './PrivateRoute';
@@ -17,7 +18,7 @@ function Test() {
 
 const App: React.FC = () => {
     const { loading, isAuthenticated, getTokenSilently, user } = useAuth0();
-    const clientRef = React.useRef<ApolloClient<unknown> | null>(null);
+    const clientRef = useRef<ApolloClient<unknown> | null>(null);
 
     /**
      * We don't want to render anything until we are done loading,
@@ -77,6 +78,7 @@ const App: React.FC = () => {
         <Router history={history}>
             <Switch>
                 <PrivateRoute path="/private" component={Test} />
+                <PrivateRoute path="/invite/:token" component={LadderInvite} />
                 <Route path="/ladders/:ladderId" component={Ladder} />
                 <Route path="/" exact component={isAuthenticated ? Home : LandingPage} />
                 <Route path="*">

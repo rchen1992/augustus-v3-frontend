@@ -56,11 +56,16 @@ export type Match = Node & {
 export type Mutation = {
     __typename?: 'Mutation';
     newLadder: Ladder;
+    joinLadder: Ladder;
     newMatch: Match;
 };
 
 export type MutationNewLadderArgs = {
     ladderName: Scalars['String'];
+};
+
+export type MutationJoinLadderArgs = {
+    token: Scalars['String'];
 };
 
 export type MutationNewMatchArgs = {
@@ -86,6 +91,7 @@ export type Query = {
     me?: Maybe<User>;
     ladders: Array<Ladder>;
     ladder?: Maybe<Ladder>;
+    ladderByInviteToken?: Maybe<Ladder>;
     matches: Array<Match>;
     match?: Maybe<Match>;
 };
@@ -96,6 +102,10 @@ export type QueryUserArgs = {
 
 export type QueryLadderArgs = {
     id: Scalars['ID'];
+};
+
+export type QueryLadderByInviteTokenArgs = {
+    token: Scalars['String'];
 };
 
 export type QueryMatchesArgs = {
@@ -147,6 +157,26 @@ export type MatchFieldsFragment = { __typename?: 'Match' } & Pick<
         winner: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'userName'>>;
     };
 
+export type UserLadderFieldsFragment = { __typename?: 'Ladder' } & Pick<
+    Ladder,
+    'id' | 'ladderName' | 'inviteToken' | 'userRating' | 'userRatingDelta' | 'userRank'
+> & {
+        userMatchStats: Maybe<
+            { __typename?: 'UserMatchStats' } & Pick<
+                UserMatchStats,
+                'matchCount' | 'winCount' | 'lossCount' | 'tieCount'
+            >
+        >;
+    };
+
+export type JoinLadderMutationVariables = {
+    token: Scalars['String'];
+};
+
+export type JoinLadderMutation = { __typename?: 'Mutation' } & {
+    joinLadder: { __typename?: 'Ladder' } & UserLadderFieldsFragment;
+};
+
 export type NewLadderMutationVariables = {
     ladderName: Scalars['String'];
 };
@@ -171,6 +201,14 @@ export type NewMatchMutationVariables = {
 
 export type NewMatchMutation = { __typename?: 'Mutation' } & {
     newMatch: { __typename?: 'Match' } & MatchFieldsFragment;
+};
+
+export type GetLadderByInviteTokenQueryVariables = {
+    token: Scalars['String'];
+};
+
+export type GetLadderByInviteTokenQuery = { __typename?: 'Query' } & {
+    ladderByInviteToken: Maybe<{ __typename?: 'Ladder' } & Pick<Ladder, 'id' | 'ladderName'>>;
 };
 
 export type GetLadderMatchesQueryVariables = {
@@ -242,24 +280,7 @@ export type GetMyLaddersQueryVariables = {};
 export type GetMyLaddersQuery = { __typename?: 'Query' } & {
     me: Maybe<
         { __typename?: 'User' } & Pick<User, 'id'> & {
-                ladders: Array<
-                    { __typename?: 'Ladder' } & Pick<
-                        Ladder,
-                        | 'id'
-                        | 'ladderName'
-                        | 'inviteToken'
-                        | 'userRating'
-                        | 'userRatingDelta'
-                        | 'userRank'
-                    > & {
-                            userMatchStats: Maybe<
-                                { __typename?: 'UserMatchStats' } & Pick<
-                                    UserMatchStats,
-                                    'matchCount' | 'winCount' | 'lossCount' | 'tieCount'
-                                >
-                            >;
-                        }
-                >;
+                ladders: Array<{ __typename?: 'Ladder' } & UserLadderFieldsFragment>;
             }
     >;
 };
@@ -302,6 +323,69 @@ export const MatchFieldsFragmentDoc = gql`
         }
     }
 `;
+export const UserLadderFieldsFragmentDoc = gql`
+    fragment userLadderFields on Ladder {
+        id
+        ladderName
+        inviteToken
+        userRating
+        userRatingDelta
+        userRank
+        userMatchStats {
+            matchCount
+            winCount
+            lossCount
+            tieCount
+        }
+    }
+`;
+export const JoinLadderDocument = gql`
+    mutation joinLadder($token: String!) {
+        joinLadder(token: $token) {
+            ...userLadderFields
+        }
+    }
+    ${UserLadderFieldsFragmentDoc}
+`;
+export type JoinLadderMutationFn = ApolloReactCommon.MutationFunction<
+    JoinLadderMutation,
+    JoinLadderMutationVariables
+>;
+
+/**
+ * __useJoinLadderMutation__
+ *
+ * To run a mutation, you first call `useJoinLadderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useJoinLadderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [joinLadderMutation, { data, loading, error }] = useJoinLadderMutation({
+ *   variables: {
+ *      token: // value for 'token'
+ *   },
+ * });
+ */
+export function useJoinLadderMutation(
+    baseOptions?: ApolloReactHooks.MutationHookOptions<
+        JoinLadderMutation,
+        JoinLadderMutationVariables
+    >
+) {
+    return ApolloReactHooks.useMutation<JoinLadderMutation, JoinLadderMutationVariables>(
+        JoinLadderDocument,
+        baseOptions
+    );
+}
+export type JoinLadderMutationHookResult = ReturnType<typeof useJoinLadderMutation>;
+export type JoinLadderMutationResult = ApolloReactCommon.MutationResult<JoinLadderMutation>;
+export type JoinLadderMutationOptions = ApolloReactCommon.BaseMutationOptions<
+    JoinLadderMutation,
+    JoinLadderMutationVariables
+>;
 export const NewLadderDocument = gql`
     mutation newLadder($ladderName: String!) {
         newLadder(ladderName: $ladderName) {
@@ -402,6 +486,63 @@ export type NewMatchMutationResult = ApolloReactCommon.MutationResult<NewMatchMu
 export type NewMatchMutationOptions = ApolloReactCommon.BaseMutationOptions<
     NewMatchMutation,
     NewMatchMutationVariables
+>;
+export const GetLadderByInviteTokenDocument = gql`
+    query getLadderByInviteToken($token: String!) {
+        ladderByInviteToken(token: $token) {
+            id
+            ladderName
+        }
+    }
+`;
+
+/**
+ * __useGetLadderByInviteTokenQuery__
+ *
+ * To run a query within a React component, call `useGetLadderByInviteTokenQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetLadderByInviteTokenQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetLadderByInviteTokenQuery({
+ *   variables: {
+ *      token: // value for 'token'
+ *   },
+ * });
+ */
+export function useGetLadderByInviteTokenQuery(
+    baseOptions?: ApolloReactHooks.QueryHookOptions<
+        GetLadderByInviteTokenQuery,
+        GetLadderByInviteTokenQueryVariables
+    >
+) {
+    return ApolloReactHooks.useQuery<
+        GetLadderByInviteTokenQuery,
+        GetLadderByInviteTokenQueryVariables
+    >(GetLadderByInviteTokenDocument, baseOptions);
+}
+export function useGetLadderByInviteTokenLazyQuery(
+    baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+        GetLadderByInviteTokenQuery,
+        GetLadderByInviteTokenQueryVariables
+    >
+) {
+    return ApolloReactHooks.useLazyQuery<
+        GetLadderByInviteTokenQuery,
+        GetLadderByInviteTokenQueryVariables
+    >(GetLadderByInviteTokenDocument, baseOptions);
+}
+export type GetLadderByInviteTokenQueryHookResult = ReturnType<
+    typeof useGetLadderByInviteTokenQuery
+>;
+export type GetLadderByInviteTokenLazyQueryHookResult = ReturnType<
+    typeof useGetLadderByInviteTokenLazyQuery
+>;
+export type GetLadderByInviteTokenQueryResult = ApolloReactCommon.QueryResult<
+    GetLadderByInviteTokenQuery,
+    GetLadderByInviteTokenQueryVariables
 >;
 export const GetLadderMatchesDocument = gql`
     query getLadderMatches($id: ID!, $offset: Int, $limit: Int) {
@@ -675,21 +816,11 @@ export const GetMyLaddersDocument = gql`
         me {
             id
             ladders {
-                id
-                ladderName
-                inviteToken
-                userRating
-                userRatingDelta
-                userRank
-                userMatchStats {
-                    matchCount
-                    winCount
-                    lossCount
-                    tieCount
-                }
+                ...userLadderFields
             }
         }
     }
+    ${UserLadderFieldsFragmentDoc}
 `;
 
 /**
