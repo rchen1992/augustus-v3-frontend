@@ -12,8 +12,8 @@ interface GenericErrorProps {
 
 const GenericError: React.FC<GenericErrorProps> = ({
     message = 'Oops. Something went wrong.',
-    showBackToHome = true,
-    fullscreen = true,
+    showBackToHome = false,
+    fullscreen = false,
 }) => {
     const errorBody = (
         <StyledResult

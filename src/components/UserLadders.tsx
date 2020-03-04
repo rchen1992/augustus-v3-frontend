@@ -4,18 +4,23 @@ import UserLadder from 'components/UserLadder';
 import styled from 'styled-components';
 import media from 'style/media';
 import { Empty, Button, Spin } from 'antd';
+import GenericError from 'components/GenericError';
 
 const UserLadders: React.FC = () => {
-    const { loading, data } = useGetMyLaddersQuery();
+    const { loading, error, data } = useGetMyLaddersQuery();
 
     const ladders = data?.me?.ladders;
 
-    if (loading || !ladders) {
+    if (loading) {
         return (
             <SpinContainer>
                 <Spin />
             </SpinContainer>
         );
+    }
+
+    if (error || !ladders) {
+        return <GenericError message="There was an error getting your ladders." />;
     }
 
     if (ladders.length === 0) {

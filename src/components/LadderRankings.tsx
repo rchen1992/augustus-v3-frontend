@@ -10,6 +10,7 @@ import {
 import RatingDelta from 'components/RatingDelta';
 import AvatarAndUsername from 'components/AvatarAndUsername';
 import formatDate from 'utils/formatDate';
+import GenericError from 'components/GenericError';
 
 type GetLadderRankingsQueryUser = NonNullable<GetLadderRankingsQuery['ladder']>['users'][0];
 type GetLadderRankingsQueryUserColumn = GetLadderRankingsQueryUser & { key: string };
@@ -57,7 +58,7 @@ const columns: ColumnProps<GetLadderRankingsQueryUserColumn>[] = [
 ];
 
 const LadderRankings: React.FC<LadderRankingsProps> = ({ ladderId }) => {
-    const { loading, data } = useGetLadderRankingsQuery({
+    const { loading, error, data } = useGetLadderRankingsQuery({
         variables: {
             id: ladderId,
             ladderUsersOrderBy: LadderUsersOrderBy.RankDesc,
@@ -70,6 +71,10 @@ const LadderRankings: React.FC<LadderRankingsProps> = ({ ladderId }) => {
                 <Spin />
             </SpinContainer>
         );
+    }
+
+    if (error) {
+        return <GenericError message="There was an error getting the ladder rankings." />;
     }
 
     const users = data?.ladder?.users

@@ -19,6 +19,7 @@ function LadderInvite() {
 
     const {
         loading: ladderByInviteTokenLoading,
+        error: ladderByInviteError,
         data: ladderByInviteTokenData,
     } = useGetLadderByInviteTokenQuery({
         variables: {
@@ -26,7 +27,11 @@ function LadderInvite() {
         },
     });
 
-    const { loading: myLaddersLoading, data: myLaddersData } = useGetMyLaddersQuery();
+    const {
+        loading: myLaddersLoading,
+        error: myLaddersError,
+        data: myLaddersData,
+    } = useGetMyLaddersQuery();
 
     const [
         joinLadder,
@@ -55,8 +60,13 @@ function LadderInvite() {
         return <FullscreenSpin />;
     }
 
-    if (!ladderByInviteTokenData?.ladderByInviteToken) {
-        return <GenericError />;
+    if (
+        ladderByInviteError ||
+        myLaddersError ||
+        joinLadderError ||
+        !ladderByInviteTokenData?.ladderByInviteToken
+    ) {
+        return <GenericError fullscreen showBackToHome />;
     }
 
     const alreadyInLadder =
