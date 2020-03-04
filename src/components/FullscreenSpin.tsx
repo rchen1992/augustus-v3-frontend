@@ -1,24 +1,13 @@
 import React from 'react';
-import styled from 'styled-components';
 import { Spin } from 'antd';
+import Fullscreen from 'components/Fullscreen';
 
 const FullscreenSpin: React.FC = () => {
     return (
-        <SpinContainer>
+        <Fullscreen>
             <Spin size="large" />
-        </SpinContainer>
+        </Fullscreen>
     );
 };
 
 export default FullscreenSpin;
-
-const SpinContainer = styled.div`
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    top: 0;
-    left: 0;
-`;

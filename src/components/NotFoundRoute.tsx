@@ -2,10 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { Button } from 'antd';
+import Fullscreen from 'components/Fullscreen';
 
 const NotFoundRoute = () => {
     return (
-        <FullPage>
+        <Fullscreen>
             <Container>
                 <h1>Oops! Page not found.</h1>
 
@@ -13,19 +14,11 @@ const NotFoundRoute = () => {
                     <Button type="primary">Back to home</Button>
                 </Link>
             </Container>
-        </FullPage>
+        </Fullscreen>
     );
 };
 
 export default NotFoundRoute;
-
-const FullPage = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100vh;
-`;
 
 const Container = styled.div`
     text-align: center;

@@ -11,7 +11,7 @@ import {
 import GET_MY_LADDERS from 'graphql/queries/getMyLadders';
 import FullscreenSpin from 'components/FullscreenSpin';
 import { useHistory, useParams, Redirect } from 'react-router-dom';
-import NotFoundRoute from 'components/NotFoundRoute';
+import GenericError from 'components/GenericError';
 
 function LadderInvite() {
     const { token } = useParams();
@@ -56,7 +56,7 @@ function LadderInvite() {
     }
 
     if (!ladderByInviteTokenData?.ladderByInviteToken) {
-        return <NotFoundRoute />;
+        return <GenericError />;
     }
 
     const alreadyInLadder =
