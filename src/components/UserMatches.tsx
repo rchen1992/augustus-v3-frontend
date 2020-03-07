@@ -7,9 +7,10 @@ import colors from 'style/theme/colors';
 import { USER_MATCHES_DEFAULT_LIMIT } from 'utils/constants';
 import formatDate from 'utils/formatDate';
 import useLoadMorePaginationButton from 'hooks/useLoadMorePaginationButton';
+import GenericError from 'components/GenericError';
 
 const UserMatches: React.FC = () => {
-    const { loading, data, fetchMore } = useGetMyMatchesQuery({
+    const { loading, data, error, fetchMore } = useGetMyMatchesQuery({
         variables: {
             offset: 0,
             limit: USER_MATCHES_DEFAULT_LIMIT,
@@ -53,12 +54,16 @@ const UserMatches: React.FC = () => {
     const matches = data?.me?.matches;
     const matchCount = data?.me?.matchCount;
 
-    if (loading || !matches || !authedUserId) {
+    if (loading) {
         return (
             <SpinContainer>
                 <Spin />
             </SpinContainer>
         );
+    }
+
+    if (error || !matches || !authedUserId) {
+        return <GenericError message="There was an error getting your matches." />;
     }
 
     if (matches.length === 0) {

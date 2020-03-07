@@ -4,13 +4,14 @@ import UserLadder from 'components/UserLadder';
 import styled from 'styled-components';
 import media from 'style/media';
 import { Empty, Button, Spin } from 'antd';
+import GenericError from 'components/GenericError';
 
 const UserLadders: React.FC = () => {
-    const { loading, data } = useGetMyLaddersQuery();
+    const { loading, error, data } = useGetMyLaddersQuery();
 
-    const ladders = data?.me?.ladders;
+    const userLadders = data?.me?.userLadders;
 
-    if (loading || !ladders) {
+    if (loading) {
         return (
             <SpinContainer>
                 <Spin />
@@ -18,7 +19,11 @@ const UserLadders: React.FC = () => {
         );
     }
 
-    if (ladders.length === 0) {
+    if (error || !userLadders) {
+        return <GenericError message="There was an error getting your ladders." />;
+    }
+
+    if (userLadders.length === 0) {
         return (
             <Empty
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -29,11 +34,11 @@ const UserLadders: React.FC = () => {
         );
     }
 
-    const userLadders = ladders.map(ladder => {
-        return <UserLadder key={ladder.id} ladder={ladder} />;
+    const userLadderComponents = userLadders.map(userLadder => {
+        return <UserLadder key={userLadder.id} userLadder={userLadder} />;
     });
 
-    return <Container>{userLadders}</Container>;
+    return <Container>{userLadderComponents}</Container>;
 };
 
 export default UserLadders;

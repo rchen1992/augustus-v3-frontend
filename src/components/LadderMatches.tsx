@@ -7,6 +7,7 @@ import formatDate from 'utils/formatDate';
 import styled from 'styled-components';
 import useLoadMorePaginationButton from 'hooks/useLoadMorePaginationButton';
 import { LADDER_MATCHES_DEFAULT_LIMIT } from 'utils/constants';
+import GenericError from 'components/GenericError';
 
 type GetLadderMatchesQueryMatch = NonNullable<GetLadderMatchesQuery['ladder']>['matches'][0];
 type GetLadderMatchesQueryMatchColumm = GetLadderMatchesQueryMatch & { key: string };
@@ -55,7 +56,7 @@ const columns: ColumnProps<GetLadderMatchesQueryMatchColumm>[] = [
 ];
 
 const LadderMatches: React.FC<LadderMatchesProps> = ({ ladderId }) => {
-    const { loading, data, fetchMore } = useGetLadderMatchesQuery({
+    const { loading, error, data, fetchMore } = useGetLadderMatchesQuery({
         variables: {
             id: ladderId,
             offset: 0,
@@ -86,12 +87,16 @@ const LadderMatches: React.FC<LadderMatchesProps> = ({ ladderId }) => {
         },
     });
 
-    if (loading || !data?.ladder) {
+    if (loading) {
         return (
             <CenterContainer>
                 <Spin />
             </CenterContainer>
         );
+    }
+
+    if (error || !data?.ladder) {
+        return <GenericError message="There was an error getting the ladder matches." />;
     }
 
     const matches = data.ladder.matches

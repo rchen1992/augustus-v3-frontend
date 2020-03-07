@@ -4,9 +4,12 @@ export default gql`
     query getLadderUsers($id: ID!) {
         ladder(id: $id) {
             id
-            users {
+            ladderUsers {
                 id
-                userName
+                user {
+                    id
+                    userName
+                }
             }
         }
     }

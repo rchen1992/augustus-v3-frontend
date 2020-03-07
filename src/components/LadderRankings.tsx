@@ -10,8 +10,9 @@ import {
 import RatingDelta from 'components/RatingDelta';
 import AvatarAndUsername from 'components/AvatarAndUsername';
 import formatDate from 'utils/formatDate';
+import GenericError from 'components/GenericError';
 
-type GetLadderRankingsQueryUser = NonNullable<GetLadderRankingsQuery['ladder']>['users'][0];
+type GetLadderRankingsQueryUser = NonNullable<GetLadderRankingsQuery['ladder']>['ladderUsers'][0];
 type GetLadderRankingsQueryUserColumn = GetLadderRankingsQueryUser & { key: string };
 
 interface LadderRankingsProps {
@@ -27,7 +28,7 @@ const columns: ColumnProps<GetLadderRankingsQueryUserColumn>[] = [
     {
         title: 'Player name',
         key: 'player_name',
-        render(_, { userName, avatarUrl }) {
+        render(_, { user: { userName, avatarUrl } }) {
             return <AvatarAndUsername avatarUrl={avatarUrl} userName={userName} />;
         },
     },
@@ -46,18 +47,18 @@ const columns: ColumnProps<GetLadderRankingsQueryUserColumn>[] = [
     {
         title: 'Join date',
         key: 'join_date',
-        render(_, { ladderJoinDate }) {
-            if (!ladderJoinDate) {
+        render(_, { joinDate }) {
+            if (!joinDate) {
                 return '';
             }
 
-            return formatDate(ladderJoinDate);
+            return formatDate(joinDate);
         },
     },
 ];
 
 const LadderRankings: React.FC<LadderRankingsProps> = ({ ladderId }) => {
-    const { loading, data } = useGetLadderRankingsQuery({
+    const { loading, error, data } = useGetLadderRankingsQuery({
         variables: {
             id: ladderId,
             ladderUsersOrderBy: LadderUsersOrderBy.RankDesc,
@@ -72,11 +73,23 @@ const LadderRankings: React.FC<LadderRankingsProps> = ({ ladderId }) => {
         );
     }
 
-    const users = data?.ladder?.users
-        ? data.ladder.users.map(user => ({ ...user, key: user.id }))
+    if (error) {
+        return <GenericError message="There was an error getting the ladder rankings." />;
+    }
+
+    const ladderUsers = data?.ladder?.ladderUsers
+        ? data.ladder.ladderUsers.map(ladderUser => ({ ...ladderUser, key: ladderUser.id }))
         : [];
 
-    return <Table columns={columns} dataSource={users} pagination={false} size="middle" bordered />;
+    return (
+        <Table
+            columns={columns}
+            dataSource={ladderUsers}
+            pagination={false}
+            size="middle"
+            bordered
+        />
+    );
 };
 
 export default LadderRankings;
