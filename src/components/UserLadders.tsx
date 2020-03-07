@@ -9,7 +9,7 @@ import GenericError from 'components/GenericError';
 const UserLadders: React.FC = () => {
     const { loading, error, data } = useGetMyLaddersQuery();
 
-    const ladders = data?.me?.ladders;
+    const userLadders = data?.me?.userLadders;
 
     if (loading) {
         return (
@@ -19,11 +19,11 @@ const UserLadders: React.FC = () => {
         );
     }
 
-    if (error || !ladders) {
+    if (error || !userLadders) {
         return <GenericError message="There was an error getting your ladders." />;
     }
 
-    if (ladders.length === 0) {
+    if (userLadders.length === 0) {
         return (
             <Empty
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -34,11 +34,11 @@ const UserLadders: React.FC = () => {
         );
     }
 
-    const userLadders = ladders.map(ladder => {
-        return <UserLadder key={ladder.id} ladder={ladder} />;
+    const userLadderComponents = userLadders.map(userLadder => {
+        return <UserLadder key={userLadder.id} userLadder={userLadder} />;
     });
 
-    return <Container>{userLadders}</Container>;
+    return <Container>{userLadderComponents}</Container>;
 };
 
 export default UserLadders;

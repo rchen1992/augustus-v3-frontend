@@ -1,18 +1,21 @@
 import { gql } from 'apollo-boost';
 
 export default gql`
-    fragment userLadderFields on Ladder {
+    fragment userLadderFields on LadderUser {
         id
-        ladderName
-        inviteToken
-        userRating
-        userRatingDelta
-        userRank
-        userMatchStats {
+        rating
+        ratingDelta
+        rank
+        matchStats {
             matchCount
             winCount
             lossCount
             tieCount
+        }
+        ladder {
+            id
+            ladderName
+            inviteToken
         }
     }
 `;

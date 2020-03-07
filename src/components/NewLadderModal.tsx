@@ -18,13 +18,13 @@ const NewLadderModal: React.FC = () => {
                 query: GET_MY_LADDERS,
             }) as GetMyLaddersQuery;
 
-            if (me?.ladders && data?.newLadder) {
+            if (me?.userLadders && data?.newLadder) {
                 cache.writeQuery({
                     query: GET_MY_LADDERS,
                     data: {
                         me: {
                             ...me,
-                            ladders: me.ladders.concat([data.newLadder]),
+                            userLadders: me.userLadders.concat([data.newLadder]),
                         },
                     },
                 });

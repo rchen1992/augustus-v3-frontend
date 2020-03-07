@@ -4,14 +4,17 @@ export default gql`
     query getLadderRankings($id: ID!, $ladderUsersOrderBy: LadderUsersOrderBy) {
         ladder(id: $id) {
             id
-            users(orderBy: $ladderUsersOrderBy) {
+            ladderUsers(orderBy: $ladderUsersOrderBy) {
                 id
-                userName
-                avatarUrl
                 rating
                 ratingDelta
                 rank
-                ladderJoinDate
+                joinDate
+                user {
+                    id
+                    userName
+                    avatarUrl
+                }
             }
         }
     }

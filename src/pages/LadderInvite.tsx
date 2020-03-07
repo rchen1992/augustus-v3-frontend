@@ -1,7 +1,7 @@
 import React from 'react';
 import AppLayout from 'components/AppLayout';
 import styled from 'styled-components';
-import { Button } from 'antd';
+import { Button, Icon } from 'antd';
 import {
     useGetLadderByInviteTokenQuery,
     useGetMyLaddersQuery,
@@ -42,13 +42,13 @@ function LadderInvite() {
                 query: GET_MY_LADDERS,
             }) as GetMyLaddersQuery;
 
-            if (me?.ladders && data?.joinLadder) {
+            if (me?.userLadders && data?.joinLadder) {
                 cache.writeQuery({
                     query: GET_MY_LADDERS,
                     data: {
                         me: {
                             ...me,
-                            ladders: me.ladders.concat([data.joinLadder]),
+                            userLadders: me.userLadders.concat([data.joinLadder]),
                         },
                     },
                 });
@@ -70,10 +70,10 @@ function LadderInvite() {
     }
 
     const alreadyInLadder =
-        myLaddersData?.me?.ladders &&
+        myLaddersData?.me?.userLadders &&
         ladderByInviteTokenData?.ladderByInviteToken &&
-        myLaddersData.me.ladders.some(
-            ladder => ladder.id === ladderByInviteTokenData?.ladderByInviteToken?.id
+        myLaddersData.me.userLadders.some(
+            userLadder => userLadder.ladder.id === ladderByInviteTokenData?.ladderByInviteToken?.id
         );
 
     if (alreadyInLadder) {
@@ -96,6 +96,7 @@ function LadderInvite() {
         <AppLayout>
             <Container>
                 <div>
+                    <JoinIcon type="usergroup-add" />
                     <h1>
                         You've been invited to join{' '}
                         {ladderByInviteTokenData?.ladderByInviteToken.ladderName}!
@@ -117,4 +118,13 @@ const Container = styled.div`
     align-items: center;
     height: 80vh;
     text-align: center;
+`;
+
+const JoinIcon = styled(Icon)`
+    color: ${({ theme }) => theme.colors.primary};
+    margin-bottom: ${({ theme }) => theme.spacing(2)};
+
+    svg {
+        font-size: 60px;
+    }
 `;

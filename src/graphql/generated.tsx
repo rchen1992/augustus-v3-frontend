@@ -18,22 +18,36 @@ export type Ladder = Node & {
     inviteToken: Scalars['String'];
     createdAt?: Maybe<Scalars['String']>;
     updatedAt?: Maybe<Scalars['String']>;
-    userRating?: Maybe<Scalars['Int']>;
-    userRatingDelta?: Maybe<Scalars['Int']>;
-    userRank?: Maybe<Scalars['Int']>;
-    userMatchStats?: Maybe<UserMatchStats>;
-    users: Array<User>;
+    myLadderUser?: Maybe<LadderUser>;
+    ladderUser?: Maybe<LadderUser>;
+    ladderUsers: Array<LadderUser>;
     matches: Array<Match>;
     matchCount?: Maybe<Scalars['Int']>;
 };
 
-export type LadderUsersArgs = {
+export type LadderLadderUserArgs = {
+    userId: Scalars['ID'];
+};
+
+export type LadderLadderUsersArgs = {
     orderBy?: Maybe<LadderUsersOrderBy>;
 };
 
 export type LadderMatchesArgs = {
     offset?: Maybe<Scalars['Int']>;
     limit?: Maybe<Scalars['Int']>;
+};
+
+export type LadderUser = {
+    __typename?: 'LadderUser';
+    id: Scalars['ID'];
+    rating?: Maybe<Scalars['Int']>;
+    ratingDelta?: Maybe<Scalars['Int']>;
+    rank?: Maybe<Scalars['Int']>;
+    matchStats?: Maybe<UserMatchStats>;
+    user: User;
+    ladder: Ladder;
+    joinDate?: Maybe<Scalars['String']>;
 };
 
 export enum LadderUsersOrderBy {
@@ -55,8 +69,8 @@ export type Match = Node & {
 
 export type Mutation = {
     __typename?: 'Mutation';
-    newLadder: Ladder;
-    joinLadder: Ladder;
+    newLadder: LadderUser;
+    joinLadder: LadderUser;
     newMatch: Match;
 };
 
@@ -123,15 +137,11 @@ export type User = Node & {
     email?: Maybe<Scalars['String']>;
     userName: Scalars['String'];
     avatarUrl?: Maybe<Scalars['String']>;
-    ladders: Array<Ladder>;
+    userLadders: Array<LadderUser>;
     matches: Array<Match>;
     matchCount?: Maybe<Scalars['Int']>;
     createdAt?: Maybe<Scalars['String']>;
     updatedAt?: Maybe<Scalars['String']>;
-    rating?: Maybe<Scalars['Int']>;
-    ratingDelta?: Maybe<Scalars['Int']>;
-    rank?: Maybe<Scalars['Int']>;
-    ladderJoinDate?: Maybe<Scalars['String']>;
 };
 
 export type UserMatchesArgs = {
@@ -157,16 +167,17 @@ export type MatchFieldsFragment = { __typename?: 'Match' } & Pick<
         winner: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'userName'>>;
     };
 
-export type UserLadderFieldsFragment = { __typename?: 'Ladder' } & Pick<
-    Ladder,
-    'id' | 'ladderName' | 'inviteToken' | 'userRating' | 'userRatingDelta' | 'userRank'
+export type UserLadderFieldsFragment = { __typename?: 'LadderUser' } & Pick<
+    LadderUser,
+    'id' | 'rating' | 'ratingDelta' | 'rank'
 > & {
-        userMatchStats: Maybe<
+        matchStats: Maybe<
             { __typename?: 'UserMatchStats' } & Pick<
                 UserMatchStats,
                 'matchCount' | 'winCount' | 'lossCount' | 'tieCount'
             >
         >;
+        ladder: { __typename?: 'Ladder' } & Pick<Ladder, 'id' | 'ladderName' | 'inviteToken'>;
     };
 
 export type JoinLadderMutationVariables = {
@@ -174,7 +185,7 @@ export type JoinLadderMutationVariables = {
 };
 
 export type JoinLadderMutation = { __typename?: 'Mutation' } & {
-    joinLadder: { __typename?: 'Ladder' } & UserLadderFieldsFragment;
+    joinLadder: { __typename?: 'LadderUser' } & UserLadderFieldsFragment;
 };
 
 export type NewLadderMutationVariables = {
@@ -182,17 +193,7 @@ export type NewLadderMutationVariables = {
 };
 
 export type NewLadderMutation = { __typename?: 'Mutation' } & {
-    newLadder: { __typename?: 'Ladder' } & Pick<
-        Ladder,
-        'id' | 'ladderName' | 'inviteToken' | 'userRating' | 'userRatingDelta' | 'userRank'
-    > & {
-            userMatchStats: Maybe<
-                { __typename?: 'UserMatchStats' } & Pick<
-                    UserMatchStats,
-                    'matchCount' | 'winCount' | 'lossCount' | 'tieCount'
-                >
-            >;
-        };
+    newLadder: { __typename?: 'LadderUser' } & UserLadderFieldsFragment;
 };
 
 export type NewMatchMutationVariables = {
@@ -241,17 +242,16 @@ export type GetLadderRankingsQueryVariables = {
 export type GetLadderRankingsQuery = { __typename?: 'Query' } & {
     ladder: Maybe<
         { __typename?: 'Ladder' } & Pick<Ladder, 'id'> & {
-                users: Array<
-                    { __typename?: 'User' } & Pick<
-                        User,
-                        | 'id'
-                        | 'userName'
-                        | 'avatarUrl'
-                        | 'rating'
-                        | 'ratingDelta'
-                        | 'rank'
-                        | 'ladderJoinDate'
-                    >
+                ladderUsers: Array<
+                    { __typename?: 'LadderUser' } & Pick<
+                        LadderUser,
+                        'id' | 'rating' | 'ratingDelta' | 'rank' | 'joinDate'
+                    > & {
+                            user: { __typename?: 'User' } & Pick<
+                                User,
+                                'id' | 'userName' | 'avatarUrl'
+                            >;
+                        }
                 >;
             }
     >;
@@ -264,7 +264,11 @@ export type GetLadderUsersQueryVariables = {
 export type GetLadderUsersQuery = { __typename?: 'Query' } & {
     ladder: Maybe<
         { __typename?: 'Ladder' } & Pick<Ladder, 'id'> & {
-                users: Array<{ __typename?: 'User' } & Pick<User, 'id' | 'userName'>>;
+                ladderUsers: Array<
+                    { __typename?: 'LadderUser' } & Pick<LadderUser, 'id'> & {
+                            user: { __typename?: 'User' } & Pick<User, 'id' | 'userName'>;
+                        }
+                >;
             }
     >;
 };
@@ -280,7 +284,7 @@ export type GetMyLaddersQueryVariables = {};
 export type GetMyLaddersQuery = { __typename?: 'Query' } & {
     me: Maybe<
         { __typename?: 'User' } & Pick<User, 'id'> & {
-                ladders: Array<{ __typename?: 'Ladder' } & UserLadderFieldsFragment>;
+                userLadders: Array<{ __typename?: 'LadderUser' } & UserLadderFieldsFragment>;
             }
     >;
 };
@@ -324,18 +328,21 @@ export const MatchFieldsFragmentDoc = gql`
     }
 `;
 export const UserLadderFieldsFragmentDoc = gql`
-    fragment userLadderFields on Ladder {
+    fragment userLadderFields on LadderUser {
         id
-        ladderName
-        inviteToken
-        userRating
-        userRatingDelta
-        userRank
-        userMatchStats {
+        rating
+        ratingDelta
+        rank
+        matchStats {
             matchCount
             winCount
             lossCount
             tieCount
+        }
+        ladder {
+            id
+            ladderName
+            inviteToken
         }
     }
 `;
@@ -389,20 +396,10 @@ export type JoinLadderMutationOptions = ApolloReactCommon.BaseMutationOptions<
 export const NewLadderDocument = gql`
     mutation newLadder($ladderName: String!) {
         newLadder(ladderName: $ladderName) {
-            id
-            ladderName
-            inviteToken
-            userRating
-            userRatingDelta
-            userRank
-            userMatchStats {
-                matchCount
-                winCount
-                lossCount
-                tieCount
-            }
+            ...userLadderFields
         }
     }
+    ${UserLadderFieldsFragmentDoc}
 `;
 export type NewLadderMutationFn = ApolloReactCommon.MutationFunction<
     NewLadderMutation,
@@ -657,14 +654,17 @@ export const GetLadderRankingsDocument = gql`
     query getLadderRankings($id: ID!, $ladderUsersOrderBy: LadderUsersOrderBy) {
         ladder(id: $id) {
             id
-            users(orderBy: $ladderUsersOrderBy) {
+            ladderUsers(orderBy: $ladderUsersOrderBy) {
                 id
-                userName
-                avatarUrl
                 rating
                 ratingDelta
                 rank
-                ladderJoinDate
+                joinDate
+                user {
+                    id
+                    userName
+                    avatarUrl
+                }
             }
         }
     }
@@ -719,9 +719,12 @@ export const GetLadderUsersDocument = gql`
     query getLadderUsers($id: ID!) {
         ladder(id: $id) {
             id
-            users {
+            ladderUsers {
                 id
-                userName
+                user {
+                    id
+                    userName
+                }
             }
         }
     }
@@ -815,7 +818,7 @@ export const GetMyLaddersDocument = gql`
     query getMyLadders {
         me {
             id
-            ladders {
+            userLadders {
                 ...userLadderFields
             }
         }

@@ -125,9 +125,9 @@ const LogMatchModal: React.FC = () => {
     } = useGetMyLaddersQuery();
 
     const authedUserId = meData?.me?.id;
-    const ladders = myLaddersData?.me?.ladders;
-    const opponents = ladderUserData?.ladder?.users.filter(
-        ladderUser => ladderUser.id !== authedUserId
+    const userLadders = myLaddersData?.me?.userLadders;
+    const opponents = ladderUserData?.ladder?.ladderUsers.filter(
+        ladderUser => ladderUser.user.id !== authedUserId
     );
 
     const [newMatch, { loading: newMatchLoading }] = useNewMatchMutation({
@@ -221,20 +221,20 @@ const LogMatchModal: React.FC = () => {
         setGraphQLErrors([]);
     }
 
-    const ladderOptions = ladders?.map(({ id, ladderName }) => (
+    const ladderOptions = userLadders?.map(({ ladder: { id, ladderName } }) => (
         <Option key={id} value={id}>
             {ladderName}
         </Option>
     ));
 
-    const opponentOptions = opponents?.map(({ id, userName }) => (
+    const opponentOptions = opponents?.map(({ user: { id, userName } }) => (
         <Option key={id} value={id}>
             {userName}
         </Option>
     ));
 
     const modalContents =
-        myLaddersLoading || !ladders ? (
+        myLaddersLoading || !userLadders ? (
             <SpinContainer>
                 <Spin />
             </SpinContainer>

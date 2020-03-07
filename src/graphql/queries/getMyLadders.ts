@@ -5,7 +5,7 @@ export default gql`
     query getMyLadders {
         me {
             id
-            ladders {
+            userLadders {
                 ...userLadderFields
             }
         }

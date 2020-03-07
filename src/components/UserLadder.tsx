@@ -7,25 +7,23 @@ import getInviteLink from 'utils/getInviteLink';
 import RatingDelta from 'components/RatingDelta';
 import { Link } from 'react-router-dom';
 
-type GetMyLaddersQueryLadder = NonNullable<GetMyLaddersQuery['me']>['ladders'][0];
+type GetMyLaddersQueryLadder = NonNullable<GetMyLaddersQuery['me']>['userLadders'][0];
 
 interface UserLadderProps {
-    ladder: GetMyLaddersQueryLadder;
+    userLadder: GetMyLaddersQueryLadder;
 }
 
 const UserLadder: React.FC<UserLadderProps> = props => {
     const {
-        id,
-        ladderName,
-        userRank,
-        userRating,
-        userRatingDelta = 0,
-        userMatchStats,
-        inviteToken,
-    } = props.ladder;
+        rank,
+        rating,
+        ratingDelta = 0,
+        matchStats,
+        ladder: { id, ladderName, inviteToken },
+    } = props.userLadder;
 
     const copyInviteLink = () => {
-        const link = getInviteLink(id, inviteToken);
+        const link = getInviteLink(inviteToken);
 
         /**
          * document.execCommand('copy') requires an actual DOM element,
@@ -69,14 +67,14 @@ const UserLadder: React.FC<UserLadderProps> = props => {
         >
             <OverlapWrapper>
                 <ColMiniCard>
-                    <Rank rank={userRank} />
+                    <Rank rank={rank} />
                 </ColMiniCard>
                 <ColMiniCard>
                     <RatingContainer>
                         <RatingLabel>Rating: </RatingLabel>
                         <RatingValue>
-                            <Rating>{userRating}</Rating>
-                            <RatingDelta userRatingDelta={userRatingDelta} />
+                            <Rating>{rating}</Rating>
+                            <RatingDelta userRatingDelta={ratingDelta} />
                         </RatingValue>
                         <EmptyFlexPlaceholder></EmptyFlexPlaceholder>
                     </RatingContainer>
@@ -85,19 +83,19 @@ const UserLadder: React.FC<UserLadderProps> = props => {
             <StatsCard>
                 <Stat>
                     <StatLabel>Matches</StatLabel>
-                    <StatValue>{userMatchStats?.matchCount}</StatValue>
+                    <StatValue>{matchStats?.matchCount}</StatValue>
                 </Stat>
                 <Stat>
                     <StatLabel>Wins</StatLabel>
-                    <StatValue>{userMatchStats?.winCount}</StatValue>
+                    <StatValue>{matchStats?.winCount}</StatValue>
                 </Stat>
                 <Stat>
                     <StatLabel>Losses</StatLabel>
-                    <StatValue>{userMatchStats?.lossCount}</StatValue>
+                    <StatValue>{matchStats?.lossCount}</StatValue>
                 </Stat>
                 <Stat>
                     <StatLabel>Ties</StatLabel>
-                    <StatValue>{userMatchStats?.tieCount}</StatValue>
+                    <StatValue>{matchStats?.tieCount}</StatValue>
                 </Stat>
             </StatsCard>
         </StyledCard>
