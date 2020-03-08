@@ -6,9 +6,11 @@ import { ReactComponent as Logo } from 'assets/wreath.svg';
 import { useAuth0 } from 'providers/Auth0Provider';
 import { Avatar } from 'antd';
 import { Link } from 'react-router-dom';
+import { useGetMeQuery } from 'graphql/generated';
 
 const Header: React.FC = () => {
-    const { isAuthenticated, user } = useAuth0();
+    const { isAuthenticated } = useAuth0();
+    const { data } = useGetMeQuery();
 
     return (
         <Container>
@@ -22,7 +24,7 @@ const Header: React.FC = () => {
                 <ControlsWrapper>
                     <LogMatchModal />
                     <AccountMenu>
-                        <StyledAvatar src={user!.picture} />
+                        <StyledAvatar icon="user" src={data?.me?.avatarUrl || undefined} />
                     </AccountMenu>
                 </ControlsWrapper>
             )}

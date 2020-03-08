@@ -276,7 +276,7 @@ export type GetLadderUsersQuery = { __typename?: 'Query' } & {
 export type GetMeQueryVariables = {};
 
 export type GetMeQuery = { __typename?: 'Query' } & {
-    me: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'userName'>>;
+    me: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'userName' | 'avatarUrl'>>;
 };
 
 export type GetMyLaddersQueryVariables = {};
@@ -779,6 +779,7 @@ export const GetMeDocument = gql`
         me {
             id
             userName
+            avatarUrl
         }
     }
 `;
