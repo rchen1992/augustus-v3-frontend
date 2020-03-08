@@ -90,7 +90,7 @@ const NewLadderModal: React.FC = () => {
             >
                 <StyledFormItem
                     validateStatus={clientValidationError ? 'error' : undefined}
-                    help={clientValidationError && 'Should be combination of numbers & alphabets'}
+                    help={clientValidationError && 'Ladder name cannot be empty'}
                 >
                     <Input
                         autoFocus
