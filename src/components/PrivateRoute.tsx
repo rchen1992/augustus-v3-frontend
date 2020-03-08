@@ -16,7 +16,7 @@ const PrivateRoute: React.FC<RouteProps> = ({ component: Component, path, ...res
         loginWithRedirect({
             appState: { targetUrl: location.pathname },
         });
-    }, [loading, isAuthenticated, loginWithRedirect, path]);
+    }, [loading, isAuthenticated, loginWithRedirect, path, location]);
 
     const render: RouterRender = props =>
         isAuthenticated === true && Component ? <Component {...props} /> : null;

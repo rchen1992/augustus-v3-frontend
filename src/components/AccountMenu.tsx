@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Dropdown, Icon } from 'antd';
+import { Menu, Dropdown } from 'antd';
 import { useAuth0 } from 'providers/Auth0Provider';
 
 const AccountMenu: React.FC = ({ children }) => {
