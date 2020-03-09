@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Input, Form, Button } from 'antd';
 import { USER_NAME_MIN_LENGTH, USER_NAME_MAX_LENGTH } from 'utils/constants';
 import { useUpdateUserMutation, GetMeQuery } from 'graphql/generated';
@@ -17,6 +17,7 @@ const EditUsername: React.FC<EditUsernameProps> = ({ userName }) => {
     const [updatedName, setUpdatedName] = useState(userName);
     const [clientValidationError, setClientValidationError] = useState('');
     const { setGraphQLErrors, graphQLErrorBox } = useGraphQLErrorBox();
+    const inputRef = useRef(null);
 
     const [updateUser, { loading }] = useUpdateUserMutation({
         update(cache, { data }) {
@@ -36,6 +37,24 @@ const EditUsername: React.FC<EditUsernameProps> = ({ userName }) => {
                 });
             }
         },
+    });
+
+    /**
+     * Focus on input when we go into editing mode.
+     */
+    React.useEffect(() => {
+        if (!editing || !inputRef.current) {
+            return;
+        }
+
+        const input = (inputRef.current as any).input;
+
+        // If we are already focused, return.
+        if (document.activeElement === input) {
+            return;
+        }
+
+        input.focus();
     });
 
     async function onSave() {
@@ -103,6 +122,7 @@ const EditUsername: React.FC<EditUsernameProps> = ({ userName }) => {
                 help={clientValidationError}
             >
                 <Input
+                    ref={inputRef}
                     value={updatedName}
                     onChange={onChange}
                     placeholder="Enter user name"
