@@ -12,10 +12,6 @@ import PrivateRoute from './PrivateRoute';
 import FullscreenSpin from 'components/FullscreenSpin';
 import NotFoundRoute from 'components/NotFoundRoute';
 
-function Test() {
-    return <div>hello world</div>;
-}
-
 const App: React.FC = () => {
     const { loading, isAuthenticated, getTokenSilently, user } = useAuth0();
     const clientRef = useRef<ApolloClient<unknown> | null>(null);
@@ -77,7 +73,6 @@ const App: React.FC = () => {
     const router = (
         <Router history={history}>
             <Switch>
-                <PrivateRoute path="/private" component={Test} />
                 <PrivateRoute path="/invite/:token" component={LadderInvite} />
                 <Route path="/ladders/:ladderId" component={Ladder} />
                 <Route path="/" exact component={isAuthenticated ? Home : LandingPage} />
