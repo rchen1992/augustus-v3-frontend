@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Input, Form, Button } from 'antd';
-import { USER_NAME_MAX_LENGTH } from 'utils/constants';
+import { USER_NAME_MIN_LENGTH, USER_NAME_MAX_LENGTH } from 'utils/constants';
 import { useUpdateUserMutation, GetMeQuery } from 'graphql/generated';
 import GET_ME from 'graphql/queries/getMe';
 import styled from 'styled-components';
@@ -15,8 +15,9 @@ const { Group: ButtonGroup } = Button;
 const EditUsername: React.FC<EditUsernameProps> = ({ userName }) => {
     const [editing, setEditing] = useState(false);
     const [updatedName, setUpdatedName] = useState(userName);
-    const [clientValidationError, setClientValidationError] = useState(false);
+    const [clientValidationError, setClientValidationError] = useState('');
     const { setGraphQLErrors, graphQLErrorBox } = useGraphQLErrorBox();
+
     const [updateUser, { loading }] = useUpdateUserMutation({
         update(cache, { data }) {
             const { me } = cache.readQuery({
@@ -38,13 +39,23 @@ const EditUsername: React.FC<EditUsernameProps> = ({ userName }) => {
     });
 
     async function onSave() {
-        // setClientValidationError(false);
+        setClientValidationError('');
 
-        // const trimmedLadderName = updatedName.trim();
-        // if (!trimmedLadderName) {
-        //     setClientValidationError(true);
-        //     return;
-        // }
+        const trimmedName = updatedName.trim();
+        if (!trimmedName) {
+            setClientValidationError('Username cannot be empty');
+            return;
+        }
+
+        if (trimmedName.length < USER_NAME_MIN_LENGTH) {
+            setClientValidationError('Username must be at least 4 characters long.');
+            return;
+        }
+
+        if (trimmedName.length > USER_NAME_MAX_LENGTH) {
+            setClientValidationError('Username cannot be greater than 20 characters long.');
+            return;
+        }
 
         /**
          * Note: without a try/catch, an unhandled promise rejection
@@ -55,11 +66,12 @@ const EditUsername: React.FC<EditUsernameProps> = ({ userName }) => {
             await updateUser({
                 variables: {
                     fields: {
-                        userName: updatedName,
+                        userName: trimmedName,
                     },
                 },
             });
             reset(false);
+            setUpdatedName(trimmedName);
         } catch (err) {
             /**
              * Keep track of graphQL errors in our own state so
@@ -76,7 +88,7 @@ const EditUsername: React.FC<EditUsernameProps> = ({ userName }) => {
 
     function reset(resetUsername = true) {
         setEditing(false);
-        setClientValidationError(false);
+        setClientValidationError('');
         setGraphQLErrors([]);
 
         if (resetUsername) {
@@ -88,7 +100,7 @@ const EditUsername: React.FC<EditUsernameProps> = ({ userName }) => {
         <>
             <StyledFormItem
                 validateStatus={clientValidationError ? 'error' : undefined}
-                help={clientValidationError && 'User name cannot be empty'}
+                help={clientValidationError}
             >
                 <Input
                     value={updatedName}
@@ -135,6 +147,10 @@ const StyledFormItem = styled(Form.Item)`
         display: flex;
         flex-wrap: nowrap;
         align-items: center;
+    }
+
+    .ant-form-explain {
+        margin-top: ${({ theme }) => theme.spacing(0)};
     }
 `;
 
