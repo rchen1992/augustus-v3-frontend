@@ -69,9 +69,14 @@ export type Match = Node & {
 
 export type Mutation = {
     __typename?: 'Mutation';
+    updateUser?: Maybe<User>;
     newLadder: LadderUser;
     joinLadder: LadderUser;
     newMatch: Match;
+};
+
+export type MutationUpdateUserArgs = {
+    fields: UpdateUserInput;
 };
 
 export type MutationNewLadderArgs = {
@@ -129,6 +134,10 @@ export type QueryMatchesArgs = {
 
 export type QueryMatchArgs = {
     id: Scalars['ID'];
+};
+
+export type UpdateUserInput = {
+    userName?: Maybe<Scalars['String']>;
 };
 
 export type User = Node & {
@@ -202,6 +211,14 @@ export type NewMatchMutationVariables = {
 
 export type NewMatchMutation = { __typename?: 'Mutation' } & {
     newMatch: { __typename?: 'Match' } & MatchFieldsFragment;
+};
+
+export type UpdateUserMutationVariables = {
+    fields: UpdateUserInput;
+};
+
+export type UpdateUserMutation = { __typename?: 'Mutation' } & {
+    updateUser: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'userName'>>;
 };
 
 export type GetLadderByInviteTokenQueryVariables = {
@@ -483,6 +500,53 @@ export type NewMatchMutationResult = ApolloReactCommon.MutationResult<NewMatchMu
 export type NewMatchMutationOptions = ApolloReactCommon.BaseMutationOptions<
     NewMatchMutation,
     NewMatchMutationVariables
+>;
+export const UpdateUserDocument = gql`
+    mutation updateUser($fields: UpdateUserInput!) {
+        updateUser(fields: $fields) {
+            id
+            userName
+        }
+    }
+`;
+export type UpdateUserMutationFn = ApolloReactCommon.MutationFunction<
+    UpdateUserMutation,
+    UpdateUserMutationVariables
+>;
+
+/**
+ * __useUpdateUserMutation__
+ *
+ * To run a mutation, you first call `useUpdateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUserMutation, { data, loading, error }] = useUpdateUserMutation({
+ *   variables: {
+ *      fields: // value for 'fields'
+ *   },
+ * });
+ */
+export function useUpdateUserMutation(
+    baseOptions?: ApolloReactHooks.MutationHookOptions<
+        UpdateUserMutation,
+        UpdateUserMutationVariables
+    >
+) {
+    return ApolloReactHooks.useMutation<UpdateUserMutation, UpdateUserMutationVariables>(
+        UpdateUserDocument,
+        baseOptions
+    );
+}
+export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
+export type UpdateUserMutationResult = ApolloReactCommon.MutationResult<UpdateUserMutation>;
+export type UpdateUserMutationOptions = ApolloReactCommon.BaseMutationOptions<
+    UpdateUserMutation,
+    UpdateUserMutationVariables
 >;
 export const GetLadderByInviteTokenDocument = gql`
     query getLadderByInviteToken($token: String!) {

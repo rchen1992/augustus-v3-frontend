@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Input, Form, Button } from 'antd';
 import { USER_NAME_MAX_LENGTH } from 'utils/constants';
-import { useGetMeQuery } from 'graphql/generated';
-// import GET_MY_LADDERS from 'graphql/queries/getMyLadders';
+import { useUpdateUserMutation, GetMeQuery } from 'graphql/generated';
+import GET_ME from 'graphql/queries/getMe';
 import styled from 'styled-components';
 import useGraphQLErrorBox from 'hooks/useGraphQLErrorBox';
 
@@ -17,28 +17,27 @@ const EditUsername: React.FC<EditUsernameProps> = ({ userName }) => {
     const [updatedName, setUpdatedName] = useState(userName);
     const [clientValidationError, setClientValidationError] = useState(false);
     const { setGraphQLErrors, graphQLErrorBox } = useGraphQLErrorBox();
+    const [updateUser, { loading }] = useUpdateUserMutation({
+        update(cache, { data }) {
+            const { me } = cache.readQuery({
+                query: GET_ME,
+            }) as GetMeQuery;
 
-    // const [newLadder, { loading }] = useNewLadderMutation({
-    //     update(cache, { data }) {
-    //         const { me } = cache.readQuery({
-    //             query: GET_MY_LADDERS,
-    //         }) as GetMyLaddersQuery;
+            if (me && data?.updateUser) {
+                cache.writeQuery({
+                    query: GET_ME,
+                    data: {
+                        me: {
+                            ...me,
+                            ...data.updateUser,
+                        },
+                    },
+                });
+            }
+        },
+    });
 
-    //         if (me?.userLadders && data?.newLadder) {
-    //             cache.writeQuery({
-    //                 query: GET_MY_LADDERS,
-    //                 data: {
-    //                     me: {
-    //                         ...me,
-    //                         userLadders: me.userLadders.concat([data.newLadder]),
-    //                     },
-    //                 },
-    //             });
-    //         }
-    //     },
-    // });
-
-    async function onSubmit() {
+    async function onSave() {
         // setClientValidationError(false);
 
         // const trimmedLadderName = updatedName.trim();
@@ -53,10 +52,14 @@ const EditUsername: React.FC<EditUsernameProps> = ({ userName }) => {
          * https://github.com/apollographql/apollo-client/issues/3876
          */
         try {
-            // await newLadder({
-            //     variables: { updatedName: trimmedLadderName },
-            // });
-            reset();
+            await updateUser({
+                variables: {
+                    fields: {
+                        userName: updatedName,
+                    },
+                },
+            });
+            reset(false);
         } catch (err) {
             /**
              * Keep track of graphQL errors in our own state so
@@ -71,11 +74,14 @@ const EditUsername: React.FC<EditUsernameProps> = ({ userName }) => {
         setUpdatedName(value);
     }
 
-    function reset() {
+    function reset(resetUsername = true) {
         setEditing(false);
-        // setUpdatedName(userName);
         setClientValidationError(false);
         setGraphQLErrors([]);
+
+        if (resetUsername) {
+            setUpdatedName(userName);
+        }
     }
 
     return (
@@ -100,8 +106,12 @@ const EditUsername: React.FC<EditUsernameProps> = ({ userName }) => {
                         </Button>
                     ) : (
                         <StyledButtonGroup>
-                            <Button onClick={() => setEditing(false)}>Cancel</Button>
-                            <Button type="primary">Save</Button>
+                            <Button onClick={() => reset()} disabled={loading}>
+                                Cancel
+                            </Button>
+                            <Button type="primary" loading={loading} onClick={onSave}>
+                                Save
+                            </Button>
                         </StyledButtonGroup>
                     )}
                 </Controls>

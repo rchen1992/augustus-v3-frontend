@@ -20,11 +20,11 @@ const AccountModal: React.FC<AccountModalProps> = ({ visible = false, onClose = 
     ) : error || !data?.me?.userName ? (
         <GenericError />
     ) : (
-        <EditUsername key={Math.random()} userName={data?.me?.userName} />
+        <EditUsername userName={data?.me?.userName} />
     );
 
     return (
-        <Modal title="My Account" visible={visible} onCancel={onClose} footer={null}>
+        <Modal title="My Account" visible={visible} onCancel={onClose} footer={null} destroyOnClose>
             {modalContent}
         </Modal>
     );
