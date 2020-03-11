@@ -28,20 +28,58 @@ function LandingPage() {
                     </TitleContainer>
                 </MaxWidthContainer>
             </Hero>
-            <Section>
+            <DarkSection>
                 <MaxWidthContainer>
                     <LadderRankingsContainer>
                         <img src="/ladderRankings.png" />
                         <LadderRankingsDescription>
-                            <h2>View ladder rankings</h2>
-                            <p>
+                            <FeatureTitle>View ladder rankings</FeatureTitle>
+                            <FeatureDescription>
                                 We use the ELO rating system to rank players in each ladder. See
                                 where you stack up against your friends!
-                            </p>
+                            </FeatureDescription>
                         </LadderRankingsDescription>
                     </LadderRankingsContainer>
                 </MaxWidthContainer>
-            </Section>
+            </DarkSection>
+            <FeatureSection>
+                <MaxWidthContainer>
+                    <FeatureContainer>
+                        <div>
+                            <FeatureTitle>Create or join ladders</FeatureTitle>
+                            <FeatureDescription>
+                                Create a new ladder or get invited to join an existing ladder by one
+                                of your friends. Track your rank, rating, wins, and losses in each
+                                of your ladders!
+                            </FeatureDescription>
+                        </div>
+                        <ColImage src="/userLadder.png" />
+                    </FeatureContainer>
+                    <FeatureContainer>
+                        <ColImage src="/userMatches.png" />
+                        <div>
+                            <FeatureTitle>Log your matches</FeatureTitle>
+                            <FeatureDescription>
+                                After you play a match, either you or your opponent can log the
+                                result, and your ratings will be instantly updated. Keep track of
+                                your full match history!
+                            </FeatureDescription>
+                        </div>
+                    </FeatureContainer>
+                </MaxWidthContainer>
+            </FeatureSection>
+            <DarkSection>
+                <Footer>
+                    <FeatureTitle>Ready to get started?</FeatureTitle>
+                    <FeatureDescription>
+                        Create an account for free and start tracking your matches and ranking.
+                    </FeatureDescription>
+
+                    <Button type="primary" onClick={loginWithRedirect}>
+                        Sign up
+                    </Button>
+                </Footer>
+            </DarkSection>
         </Container>
     );
 }
@@ -87,7 +125,7 @@ const TagLine = styled.p`
     font-size: 20px;
 `;
 
-const Section = styled.section`
+const DarkSection = styled.section`
     background-color: hsl(200, 20%, 25%);
 `;
 
@@ -111,14 +149,45 @@ const LadderRankingsDescription = styled.div`
     text-align: center;
 
     h2 {
-        font-size: 30px;
-        font-weight: bold;
         color: white;
     }
+`;
 
+const FeatureSection = styled.section`
+    padding: ${({ theme }) => theme.spacing(5)};
+`;
+
+const FeatureTitle = styled.h2`
+    font-size: 30px;
+    font-weight: bold;
+`;
+
+const FeatureDescription = styled.p`
+    font-size: 18px;
+    line-height: 28px;
+    max-width: 500px;
+`;
+
+const FeatureContainer = styled.div`
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: ${({ theme }) => theme.spacing(6, 0)};
+`;
+
+const ColImage = styled.img`
+    width: 40%;
+`;
+
+const Footer = styled.footer`
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    padding: ${({ theme }) => theme.spacing(5)};
+
+    h2,
     p {
-        font-size: 18px;
-        line-height: 28px;
-        max-width: 600px;
+        color: white;
     }
 `;
