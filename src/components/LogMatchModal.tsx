@@ -202,6 +202,12 @@ const LogMatchModal: React.FC = () => {
                 id: value as string,
             },
         });
+
+        /**
+         * Reset opponent when ladder changes in case
+         * current opponent doesn't exist in current ladder.
+         */
+        setOpponentId(undefined);
     }
 
     function onOpponentChange(value: unknown) {
