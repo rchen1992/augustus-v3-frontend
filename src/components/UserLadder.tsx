@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { GetMyLaddersQuery } from 'graphql/generated';
 import { Icon, Card, message } from 'antd';
 import styled from 'styled-components';
@@ -6,6 +6,7 @@ import Rank from 'components/Rank';
 import getInviteLink from 'utils/getInviteLink';
 import RatingDelta from 'components/RatingDelta';
 import { Link } from 'react-router-dom';
+import useAnimateToNumber from 'hooks/useAnimateToNumber';
 
 type GetMyLaddersQueryLadder = NonNullable<GetMyLaddersQuery['me']>['userLadders'][0];
 
@@ -21,6 +22,13 @@ const UserLadder: React.FC<UserLadderProps> = props => {
         matchStats,
         ladder: { id, ladderName, inviteToken },
     } = props.userLadder;
+
+    const ratingRef = useRef(null);
+
+    useAnimateToNumber({
+        targetNumber: rating || 0,
+        element: ratingRef,
+    });
 
     const copyInviteLink = () => {
         const link = getInviteLink(inviteToken);
@@ -73,7 +81,7 @@ const UserLadder: React.FC<UserLadderProps> = props => {
                     <RatingContainer>
                         <RatingLabel>Rating: </RatingLabel>
                         <RatingValue>
-                            <Rating>{rating}</Rating>
+                            <Rating ref={ratingRef}>0</Rating>
                             <RatingDelta userRatingDelta={ratingDelta} />
                         </RatingValue>
                         <EmptyFlexPlaceholder></EmptyFlexPlaceholder>
