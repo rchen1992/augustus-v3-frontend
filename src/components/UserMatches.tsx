@@ -78,42 +78,44 @@ const UserMatches: React.FC = () => {
     const hasFetchedAll = matches.length >= matchCount!;
 
     return (
-        <List
-            bordered
-            itemLayout="horizontal"
-            dataSource={matches}
-            renderItem={match => {
-                const opponent = getMatchOpponent(match, authedUserId);
-                const matchDate = formatDate(match.createdAt!);
-                const matchResultText = getMatchResultText(match, authedUserId);
-                const matchResultColor =
-                    matchResultText === 'Win'
-                        ? colors.primary
-                        : matchResultText === 'Loss'
-                        ? colors.red
-                        : colors.gray(6);
+        <Container>
+            <List
+                bordered
+                itemLayout="horizontal"
+                dataSource={matches}
+                renderItem={match => {
+                    const opponent = getMatchOpponent(match, authedUserId);
+                    const matchDate = formatDate(match.createdAt!);
+                    const matchResultText = getMatchResultText(match, authedUserId);
+                    const matchResultColor =
+                        matchResultText === 'Win'
+                            ? colors.primary
+                            : matchResultText === 'Loss'
+                            ? colors.red
+                            : colors.gray(6);
 
-                return (
-                    <List.Item
-                        extra={
-                            <ListItemExtra>
-                                <ListItemDescription>{matchDate}</ListItemDescription>
-                                <MatchResultTag color={matchResultColor}>
-                                    {matchResultText}
-                                </MatchResultTag>
-                            </ListItemExtra>
-                        }
-                    >
-                        <List.Item.Meta
-                            avatar={<Avatar src={opponent.avatarUrl || undefined} />}
-                            title={<ListItemTitle>VS - {opponent.userName}</ListItemTitle>}
-                            description={match.ladder.ladderName}
-                        />
-                    </List.Item>
-                );
-            }}
-            loadMore={!hasFetchedAll ? loadMoreButton : null}
-        />
+                    return (
+                        <List.Item
+                            extra={
+                                <ListItemExtra>
+                                    <ListItemDescription>{matchDate}</ListItemDescription>
+                                    <MatchResultTag color={matchResultColor}>
+                                        {matchResultText}
+                                    </MatchResultTag>
+                                </ListItemExtra>
+                            }
+                        >
+                            <List.Item.Meta
+                                avatar={<Avatar src={opponent.avatarUrl || undefined} />}
+                                title={<ListItemTitle>VS - {opponent.userName}</ListItemTitle>}
+                                description={match.ladder.ladderName}
+                            />
+                        </List.Item>
+                    );
+                }}
+                loadMore={!hasFetchedAll ? loadMoreButton : null}
+            />
+        </Container>
     );
 };
 
@@ -121,6 +123,10 @@ export default UserMatches;
 
 const SpinContainer = styled.div`
     text-align: center;
+`;
+
+const Container = styled.div`
+    ${({ theme }) => theme.animations.fadeReveal}
 `;
 
 const ListItemTitle = styled.span`

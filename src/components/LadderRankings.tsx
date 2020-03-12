@@ -82,13 +82,15 @@ const LadderRankings: React.FC<LadderRankingsProps> = ({ ladderId }) => {
         : [];
 
     return (
-        <Table
-            columns={columns}
-            dataSource={ladderUsers}
-            pagination={false}
-            size="middle"
-            bordered
-        />
+        <Container>
+            <Table
+                columns={columns}
+                dataSource={ladderUsers}
+                pagination={false}
+                size="middle"
+                bordered
+            />
+        </Container>
     );
 };
 
@@ -105,4 +107,8 @@ const RatingValue = styled.span`
 
 const SpinContainer = styled.div`
     text-align: center;
+`;
+
+const Container = styled.div`
+    ${({ theme }) => theme.animations.fadeReveal}
 `;

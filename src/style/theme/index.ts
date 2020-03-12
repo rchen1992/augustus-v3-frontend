@@ -4,6 +4,7 @@ import colors, { Colors } from './colors';
 import typography, { Typography } from './typography';
 import shape, { Shape } from './shape';
 import media, { Media } from 'style/media';
+import animations, { Animations } from './animations';
 
 export interface BaseTheme {
     spacing: (
@@ -17,6 +18,7 @@ export interface BaseTheme {
     typography: Typography;
     shape: Shape;
     media: Media;
+    animations: Animations;
 }
 
 const theme: DefaultTheme = {
@@ -72,6 +74,7 @@ const theme: DefaultTheme = {
     typography,
     shape,
     media,
+    animations,
 };
 
 export default theme;

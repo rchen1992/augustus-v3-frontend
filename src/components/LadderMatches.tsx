@@ -106,15 +106,19 @@ const LadderMatches: React.FC<LadderMatchesProps> = ({ ladderId }) => {
     const fetchedAll = matches.length >= data.ladder.matchCount!;
 
     return (
-        <Table
-            columns={columns}
-            dataSource={matches}
-            size="small"
-            pagination={false}
-            footer={
-                fetchedAll ? undefined : () => <CenterContainer>{loadMoreButton}</CenterContainer>
-            }
-        />
+        <Container>
+            <Table
+                columns={columns}
+                dataSource={matches}
+                size="small"
+                pagination={false}
+                footer={
+                    fetchedAll
+                        ? undefined
+                        : () => <CenterContainer>{loadMoreButton}</CenterContainer>
+                }
+            />
+        </Container>
     );
 };
 
@@ -122,4 +126,8 @@ export default LadderMatches;
 
 const CenterContainer = styled.div`
     text-align: center;
+`;
+
+const Container = styled.div`
+    ${({ theme }) => theme.animations.fadeReveal};
 `;

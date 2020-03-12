@@ -69,6 +69,8 @@ const Container = styled.div`
         grid-template-columns: 1fr 1fr 1fr 1fr;
         grid-gap: ${({ theme }) => theme.spacing(4)};
     `}
+
+    ${({ theme }) => theme.animations.fadeReveal}
 `;
 
 const SpinContainer = styled.div`
