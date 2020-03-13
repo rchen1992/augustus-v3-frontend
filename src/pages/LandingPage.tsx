@@ -32,7 +32,7 @@ function LandingPage() {
             <DarkSection>
                 <MaxWidthContainer>
                     <LadderRankingsContainer>
-                        <img src="/ladderRankings.png" />
+                        <img src="/ladderRankings.png" alt="Ladder rankings" />
                         <LadderRankingsDescription>
                             <FeatureTitle>View ladder rankings</FeatureTitle>
                             <FeatureDescription>
@@ -54,10 +54,10 @@ function LandingPage() {
                                 of your ladders!
                             </FeatureDescription>
                         </FeatureCol>
-                        <ColImage src="/userLadder.png" />
+                        <ColImage src="/userLadder.png" alt="User ladder" />
                     </FeatureContainer>
                     <FeatureContainerReverse>
-                        <ColImage src="/userMatches.png" />
+                        <ColImage src="/userMatches.png" alt="User matches" />
                         <FeatureCol>
                             <FeatureTitle>Log your matches</FeatureTitle>
                             <FeatureDescription>
