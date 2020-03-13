@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import LogMatchModal from 'components/LogMatchModal';
 import AccountMenu from 'components/AccountMenu';
 import AugustusLogo from 'components/AugustusLogo';
-import { ReactComponent as Logo } from 'assets/wreath.svg';
 import { useAuth0 } from 'providers/Auth0Provider';
 import { Avatar } from 'antd';
 import { Link } from 'react-router-dom';
