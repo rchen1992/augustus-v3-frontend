@@ -30,7 +30,7 @@ const Auth0Provider: React.FC<Auth0ProviderProps> = ({
     onRedirectCallback,
     ...initOptions
 }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState<Auth0User>();
     const [auth0Client, setAuth0] = useState<Auth0Client>();
     const [loading, setLoading] = useState(true);

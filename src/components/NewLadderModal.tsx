@@ -5,8 +5,17 @@ import { useNewLadderMutation, GetMyLaddersQuery } from 'graphql/generated';
 import GET_MY_LADDERS from 'graphql/queries/getMyLadders';
 import styled from 'styled-components';
 import useGraphQLErrorBox from 'hooks/useGraphQLErrorBox';
+import { ButtonType } from 'antd/lib/button';
 
-const NewLadderModal: React.FC = () => {
+interface NewLadderModalProps {
+    buttonText?: string;
+    buttonType?: ButtonType;
+}
+
+const NewLadderModal: React.FC<NewLadderModalProps> = ({
+    buttonText = 'New Ladder',
+    buttonType = 'default',
+}) => {
     const [visible, setVisible] = useState(false);
     const [ladderName, setLadderName] = useState('');
     const [clientValidationError, setClientValidationError] = useState(false);
@@ -78,8 +87,8 @@ const NewLadderModal: React.FC = () => {
 
     return (
         <>
-            <Button type="default" onClick={() => setVisible(true)}>
-                New Ladder
+            <Button type={buttonType} onClick={() => setVisible(true)}>
+                {buttonText}
             </Button>
             <Modal
                 title="Create new ladder"
