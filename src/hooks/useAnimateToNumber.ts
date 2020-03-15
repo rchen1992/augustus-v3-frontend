@@ -24,6 +24,8 @@ export default ({
     const currentNumber = useRef(startNumber);
 
     useEffect(() => {
+        currentNumber.current = startNumber;
+
         const interval = setInterval(() => {
             if (currentNumber.current >= targetNumber) {
                 clearInterval(interval);
@@ -47,7 +49,7 @@ export default ({
         }, tickSpeed);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [targetNumber]);
 
     return {
         currentNumber,
