@@ -107,8 +107,8 @@ function updateLadderMatches(cache: DataProxy, newMatchData?: NewMatchMutation |
 
 const LogMatchModal: React.FC = () => {
     const [visible, setVisible] = useState(false);
-    const [ladderId, setLadderId] = useState();
-    const [opponentId, setOpponentId] = useState();
+    const [ladderId, setLadderId] = useState('');
+    const [opponentId, setOpponentId] = useState('');
     const [result, setResult] = useState(MatchResult.PlayerWin);
     const [submitted, setSubmitted] = useState(false);
     const { setGraphQLErrors, graphQLErrorBox } = useGraphQLErrorBox();
@@ -196,7 +196,7 @@ const LogMatchModal: React.FC = () => {
     }
 
     function onLadderChange(value: unknown) {
-        setLadderId(value);
+        setLadderId(value as string);
         getLadderUsers({
             variables: {
                 id: value as string,
@@ -207,11 +207,11 @@ const LogMatchModal: React.FC = () => {
          * Reset opponent when ladder changes in case
          * current opponent doesn't exist in current ladder.
          */
-        setOpponentId(undefined);
+        setOpponentId('');
     }
 
     function onOpponentChange(value: unknown) {
-        setOpponentId(value);
+        setOpponentId(value as string);
     }
 
     function onResultChange(e: RadioChangeEvent) {
@@ -219,8 +219,8 @@ const LogMatchModal: React.FC = () => {
     }
 
     function reset() {
-        setLadderId(undefined);
-        setOpponentId(undefined);
+        setLadderId('');
+        setOpponentId('');
         setResult(MatchResult.PlayerWin);
         setVisible(false);
         setSubmitted(false);
@@ -254,7 +254,7 @@ const LogMatchModal: React.FC = () => {
                         showSearch
                         placeholder="Select a ladder"
                         optionFilterProp="children"
-                        value={ladderId}
+                        value={ladderId || undefined}
                         onChange={onLadderChange}
                         filterOption={filterOptionsByName}
                     >
@@ -270,7 +270,7 @@ const LogMatchModal: React.FC = () => {
                         showSearch
                         placeholder="Select an opponent"
                         optionFilterProp="children"
-                        value={opponentId}
+                        value={opponentId || undefined}
                         onChange={onOpponentChange}
                         filterOption={filterOptionsByName}
                         loading={ladderUsersLoading}
