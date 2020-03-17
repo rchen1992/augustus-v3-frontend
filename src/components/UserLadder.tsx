@@ -7,6 +7,7 @@ import getInviteLink from 'utils/getInviteLink';
 import RatingDelta from 'components/RatingDelta';
 import { Link } from 'react-router-dom';
 import useAnimateToNumber from 'hooks/useAnimateToNumber';
+import media from 'style/media';
 
 type GetMyLaddersQueryLadder = NonNullable<GetMyLaddersQuery['me']>['userLadders'][0];
 
@@ -137,6 +138,7 @@ const StyledCard = styled(Card)`
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     background-color: ${({ theme }) => theme.colors.gray(1)};
     border-radius: ${({ theme }) => theme.shape.cardBorderRadius};
+    min-width: 0;
 
     .ant-card-body {
         position: relative;
@@ -156,6 +158,12 @@ const LadderName = styled.h2`
     margin-bottom: 0;
     font-weight: ${({ theme }) => theme.typography.fontWeightBold};
     color: white;
+
+    /* Truncate long ladder names */
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 `;
 
 const LadderNameCutoff = styled.div`
@@ -211,11 +219,15 @@ const StatsCard = styled(MiniCard)`
 
 const Stat = styled.span`
     text-align: center;
-    padding: ${({ theme }) => theme.spacing(null, 2)};
+    padding: ${({ theme }) => theme.spacing(null, 1)};
 
     :first-child {
         border-left: none;
     }
+
+    ${media.sm`
+        grid-gap: ${({ theme }) => theme.spacing(null, 2)};
+    `}
 `;
 
 const StatLabel = styled.div`
