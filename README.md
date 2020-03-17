@@ -2,7 +2,17 @@
 
 Written using React, Apollo, Auth0, and TypeScript.
 
+Deployed at: https://augustus.netlify.com
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Netlify
+
+This app is deployed on Netlify. Any pushes to `master` branch on this repo will trigger an auto-deploy.
+
+## Auth0
+
+This app uses Auth0 for authentication. Log in to Auth0 dashboard to manage the application. There are 2 tenants (logically isolated units that live within the same account), one for development and one for production.
 
 ## GraphQL Codegen
 
