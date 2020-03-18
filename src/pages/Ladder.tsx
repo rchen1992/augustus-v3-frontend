@@ -38,4 +38,5 @@ const LadderMatchesSection = styled.div`
 
 const LadderName = styled.h1`
     text-align: center;
+    margin-bottom: ${({ theme }) => theme.spacing(3)};
 `;
