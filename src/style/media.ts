@@ -4,15 +4,23 @@ export interface Media {
     [x: string]: ThemedCssFunction<DefaultTheme>;
 }
 
-const breakpoints = {
-    xs: 0,
-    sm: 600,
-    smd: 780,
-    md: 960,
-    mlg: 1120,
-    lg: 1280,
-    xl: 1920,
-};
+export enum Breakpoint {
+    xs = 0,
+    sm = 600,
+    smd = 780,
+    md = 960,
+    mlg = 1120,
+    lg = 1280,
+    xl = 1920,
+}
+
+/**
+ * Convert Breakpoint enum into JS object.
+ */
+const breakpoints = Object.keys(Breakpoint).reduce((result, bp) => {
+    result[bp] = Breakpoint[bp as any];
+    return result;
+}, {} as Record<string, any>);
 
 const media: Media = (Object.keys(breakpoints) as (keyof typeof breakpoints)[]).reduce(
     (result, breakpoint) => {

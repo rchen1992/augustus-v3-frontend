@@ -3,11 +3,13 @@ import { Table, Spin } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { GetLadderMatchesQuery, useGetLadderMatchesQuery } from 'graphql/generated';
 import AvatarAndUsername from 'components/AvatarAndUsername';
-import formatDate from 'utils/formatDate';
+import formatDate, { formatShortDate } from 'utils/formatDate';
 import styled from 'styled-components';
 import useLoadMorePaginationButton from 'hooks/useLoadMorePaginationButton';
 import { LADDER_MATCHES_DEFAULT_LIMIT } from 'utils/constants';
 import GenericError from 'components/GenericError';
+import useMedia, { getMediaQueryBreakpointStrings } from 'hooks/useMedia';
+import { Breakpoint } from 'style/media';
 
 type GetLadderMatchesQueryMatch = NonNullable<GetLadderMatchesQuery['ladder']>['matches'][0];
 type GetLadderMatchesQueryMatchColumm = GetLadderMatchesQueryMatch & { key: string };
@@ -16,7 +18,7 @@ interface LadderMatchesProps {
     ladderId: string;
 }
 
-const columns: ColumnProps<GetLadderMatchesQueryMatchColumm>[] = [
+const desktopColumns: ColumnProps<GetLadderMatchesQueryMatchColumm>[] = [
     {
         title: 'Date',
         key: 'date',
@@ -55,6 +57,21 @@ const columns: ColumnProps<GetLadderMatchesQueryMatchColumm>[] = [
     },
 ];
 
+const mobileColumns: ColumnProps<GetLadderMatchesQueryMatchColumm>[] = [
+    {
+        title: 'Date',
+        key: 'date',
+        render(_, { createdAt }) {
+            if (!createdAt) {
+                return '';
+            }
+
+            return formatShortDate(createdAt);
+        },
+    },
+    ...desktopColumns.slice(1),
+];
+
 const LadderMatches: React.FC<LadderMatchesProps> = ({ ladderId }) => {
     const { loading, error, data, fetchMore } = useGetLadderMatchesQuery({
         variables: {
@@ -63,6 +80,18 @@ const LadderMatches: React.FC<LadderMatchesProps> = ({ ladderId }) => {
             limit: LADDER_MATCHES_DEFAULT_LIMIT,
         },
     });
+
+    /**
+     * Change column rendering depending on screen size.
+     *
+     * Note: we provide breakpoint strings from largest to smallest,
+     * since it uses the first one that it matches in the given array.
+     */
+    const columns = useMedia(
+        getMediaQueryBreakpointStrings([Breakpoint.sm, Breakpoint.xs]),
+        [desktopColumns, mobileColumns],
+        desktopColumns
+    );
 
     const { loadMoreButton } = useLoadMorePaginationButton({
         fetchPage: (newPage: number) => {
@@ -100,7 +129,10 @@ const LadderMatches: React.FC<LadderMatchesProps> = ({ ladderId }) => {
     }
 
     const matches = data.ladder.matches
-        ? data.ladder.matches.map(match => ({ ...match, key: match.id }))
+        ? data.ladder.matches.map(match => ({
+              ...match,
+              key: match.id,
+          }))
         : [];
 
     const fetchedAll = matches.length >= data.ladder.matchCount!;

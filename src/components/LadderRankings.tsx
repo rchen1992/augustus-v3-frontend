@@ -11,6 +11,8 @@ import RatingDelta from 'components/RatingDelta';
 import AvatarAndUsername from 'components/AvatarAndUsername';
 import formatDate from 'utils/formatDate';
 import GenericError from 'components/GenericError';
+import useMedia, { getMediaQueryBreakpointStrings } from 'hooks/useMedia';
+import { Breakpoint } from 'style/media';
 
 type GetLadderRankingsQueryUser = NonNullable<GetLadderRankingsQuery['ladder']>['ladderUsers'][0];
 type GetLadderRankingsQueryUserColumn = GetLadderRankingsQueryUser & { key: string };
@@ -19,7 +21,7 @@ interface LadderRankingsProps {
     ladderId: string;
 }
 
-const columns: ColumnProps<GetLadderRankingsQueryUserColumn>[] = [
+const mobileColumns: ColumnProps<GetLadderRankingsQueryUserColumn>[] = [
     {
         title: 'Rank',
         dataIndex: 'rank',
@@ -44,6 +46,10 @@ const columns: ColumnProps<GetLadderRankingsQueryUserColumn>[] = [
             );
         },
     },
+];
+
+const desktopColumns: ColumnProps<GetLadderRankingsQueryUserColumn>[] = [
+    ...mobileColumns,
     {
         title: 'Join date',
         key: 'join_date',
@@ -64,6 +70,18 @@ const LadderRankings: React.FC<LadderRankingsProps> = ({ ladderId }) => {
             ladderUsersOrderBy: LadderUsersOrderBy.RankDesc,
         },
     });
+
+    /**
+     * Show different number of columns depending on screen size.
+     *
+     * Note: we provide breakpoint strings from largest to smallest,
+     * since it uses the first one that it matches in the given array.
+     */
+    const columns = useMedia(
+        getMediaQueryBreakpointStrings([Breakpoint.sm, Breakpoint.xs]),
+        [desktopColumns, mobileColumns],
+        desktopColumns
+    );
 
     if (loading) {
         return (
