@@ -24,7 +24,9 @@ const UserLadder: React.FC<UserLadderProps> = props => {
         ladder: { id, ladderName, inviteToken },
     } = props.userLadder;
 
+    const overlayRef = useRef(null);
     const ratingRef = useRef(null);
+    const inviteUrl = getInviteLink(inviteToken);
 
     useAnimateToNumber({
         targetNumber: rating || 0,
@@ -32,19 +34,19 @@ const UserLadder: React.FC<UserLadderProps> = props => {
     });
 
     const copyInviteLink = () => {
-        const link = getInviteLink(inviteToken);
-
         /**
          * document.execCommand('copy') requires an actual DOM element,
          * so we append a temporary input to the document body
          * with the link text in order to copy it.
          */
+        const overlay = overlayRef.current as any;
         const $tempInput = document.createElement('input');
-        document.body.appendChild($tempInput);
-        $tempInput.setAttribute('value', link);
+        overlay.appendChild($tempInput);
+        $tempInput.setAttribute('value', inviteUrl);
         $tempInput.select();
+        $tempInput.setSelectionRange(0, 9999);
         document.execCommand('copy');
-        document.body.removeChild($tempInput);
+        overlay.removeChild($tempInput);
 
         /**
          * Show toast.
@@ -74,7 +76,7 @@ const UserLadder: React.FC<UserLadderProps> = props => {
                 </Action>,
             ]}
         >
-            <OverlapWrapper>
+            <OverlapWrapper ref={overlayRef}>
                 <ColMiniCard>
                     <Rank rank={rank} />
                 </ColMiniCard>
